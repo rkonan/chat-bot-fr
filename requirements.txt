@@ -3,3 +3,4 @@ llama-cpp-python
 faiss-cpu
 sentence-transformers
 PyMuPDF
+Nous-Hermes-2-Mistral-7B-DPO.Q4_K_M.gguf
