@@ -14,10 +14,10 @@ docling-ibm-models==3.9.0
 docling-parse==4.1.0
 
 # === ML + maths ===
-numpy==1.26.4
-scikit-learn==1.7.1
-scipy==1.11.4
-networkx==3.5
+numpy==2.3.2
+scikit-learn==1.6.1
+scipy==1.12.0
+networkx==3.4.2
 joblib==1.5.1
 
 # === Streamlit app ===
