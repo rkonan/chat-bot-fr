@@ -8,7 +8,7 @@ import time
 
 
 import os
-os.environ["NLTK_DATA"] = "/tmp/nltk_data"
+os.environ["NLTK_DATA"] = "/home/appuser/nltk_data"
 
 # Appliquer le patch avant tout import de llama_index
 from patches.llama_patch import patch_llamaindex_nltk
