@@ -1,25 +1,20 @@
-# Core LLM
 llama-cpp-python==0.2.60
 sentence-transformers==2.5.1
 llama-index==0.10.20
 faiss-cpu==1.7.4
 
-# Vector store + data
 numpy==1.24.4
 scikit-learn==1.3.2
 scipy==1.10.1
 
-# Docling
 docling==2.43.0
 docling-core==2.44.1
 docling-ibm-models==3.9.0
 docling-parse==4.1.0
 
-# UI
 streamlit==1.35.0
 streamlit-autorefresh==1.0.1
 
-# Divers
 python-dotenv==1.1.1
 colorama==0.4.6
-typing_extensions==4.10.0
+typing-extensions>=4.12.2,<5.0.0
