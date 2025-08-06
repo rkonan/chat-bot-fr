@@ -111,7 +111,7 @@ Question reformulée :"""
 
     def ask(self, question_raw: str) -> str:
         logger.info(f"💬 Question reçue : {question_raw}")
-        if len(question_raw.split()) <= 3:
+        if len(question_raw.split()) <= 100:
             context_sample, _ = self.retrieve_context(question_raw, top_k=3)
             reformulated = self.reformulate_with_context(question_raw, context_sample)
         else:

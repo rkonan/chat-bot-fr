@@ -1,43 +1,38 @@
+# ✅ Base image Python 3.12
 FROM python:3.12-slim
 
-# Dépendances système
+# ✅ Installer dépendances système
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     libopenblas-dev \
     libsqlite3-dev \
-    git \
     curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Créer utilisateur non-root
-RUN useradd -m appuser
-
-# Dossier de travail
+# ✅ Dossier de travail
 WORKDIR /code
 
-# Copier et installer les dépendances Python
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# ✅ Copier le fichier de requirements minimal (runtime only)
+COPY requirements-base.txt .
 
-# 🔧 Créer le dossier NLTK + télécharger tous les packages nécessaires
-RUN mkdir -p /home/appuser/nltk_data && \
-    python -m nltk.downloader -d /home/appuser/nltk_data punkt stopwords
+# ✅ Forcer installation binaire pour éviter les compilations longues
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --only-binary=:all: --prefer-binary -r requirements-base.txt
 
-# Copier le code
+# ✅ Télécharger les ressources NLTK dans un dossier accessible
+RUN mkdir -p /root/nltk_data && \
+    python -m nltk.downloader -d /root/nltk_data punkt stopwords
+
+# ✅ Définir la variable d'environnement pour NLTK
+ENV NLTK_DATA=/root/nltk_data
+
+# ✅ Copier le code
 COPY . .
 
-# Donner les droits
-RUN chown -R appuser /code /home/appuser/nltk_data
-
-# Utiliser utilisateur non-root
-USER appuser
-
-# Définir variable d'environnement
-ENV NLTK_DATA=/home/appuser/nltk_data
-
-# Port pour Streamlit
+# ✅ Exposer le port (Streamlit)
 EXPOSE 7860
 
-# Commande de lancement
+# ✅ Commande de démarrage (adaptée Hugging Face)
 CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
