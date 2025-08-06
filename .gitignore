@@ -1,6 +1,6 @@
 # Fichiers et dossiers à ignorer
 llamavenv/
-models/
-*.gguf
+#models/
+#*.gguf
 __pycache__/
 *.pyc

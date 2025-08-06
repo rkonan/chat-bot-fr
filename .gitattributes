@@ -1,0 +1,2 @@
+models/Nous-Hermes-2-Mistral-7B-DPO.Q4_K_M.gguf filter=lfs diff=lfs merge=lfs -text
+models/phi-2.Q4_K_M.gguf filter=lfs diff=lfs merge=lfs -text

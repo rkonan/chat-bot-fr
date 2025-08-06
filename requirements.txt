@@ -1,6 +1,7 @@
-streamlit
-llama-cpp-python
-faiss-cpu
+llama-cpp-python>=0.2.60
 sentence-transformers
-PyMuPDF
-Nous-Hermes-2-Mistral-7B-DPO.Q4_K_M.gguf
+llama-index>=0.10.20
+faiss-cpu
+streamlit
+numpy
+scikit-learn
