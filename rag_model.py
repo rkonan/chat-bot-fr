@@ -2,7 +2,7 @@ import os
 import pickle
 import textwrap
 import logging
-from typing import Dict, List
+from typing import List
 
 import faiss
 import numpy as np
@@ -24,30 +24,20 @@ logger.addHandler(handler)
 MAX_TOKENS = 512
 
 class RAGEngine:
-    def __init__(self, model_path: str, vector_modes: List[str] = ["docling"], model_threads: int = 4):
+    def __init__(self, model_path: str, vector_path: str, index_path: str, model_threads: int = 4):
         logger.info("📦 Initialisation du moteur RAG...")
         self.llm = Llama(model_path=model_path, n_ctx=2048, n_threads=model_threads)
         self.embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
-        self.indexes: Dict[str, Dict] = {}
 
-        for mode in vector_modes:
-            vectordir = f"vectordb_{mode}" if mode != "sentence" else "vectordb"
-            index_file = os.path.join(vectordir, "index.faiss")
-            chunks_file = os.path.join(vectordir, "chunks.pkl")
 
-            logger.info(f"📂 Chargement des données vectorielles pour le mode '{mode}' depuis {vectordir}")
-            with open(chunks_file, "rb") as f:
-                chunk_texts = pickle.load(f)
-            nodes = [TextNode(text=chunk) for chunk in chunk_texts]
+        logger.info(f"📂 Chargement des données vectorielles depuis {vector_path}")
+        with open(vector_path, "rb") as f:
+            chunk_texts = pickle.load(f)
+        nodes = [TextNode(text=chunk) for chunk in chunk_texts]
 
-            faiss_index = faiss.read_index(index_file)
-            vector_store = FaissVectorStore(faiss_index=faiss_index)
-            index = VectorStoreIndex(nodes=nodes, embed_model=self.embed_model, vector_store=vector_store)
-
-            self.indexes[mode] = {
-                "nodes": nodes,
-                "index": index
-            }
+        faiss_index = faiss.read_index(index_path)
+        vector_store = FaissVectorStore(faiss_index=faiss_index)
+        self.index = VectorStoreIndex(nodes=nodes, embed_model=self.embed_model, vector_store=vector_store)
 
         logger.info("✅ Moteur RAG initialisé avec succès.")
 
@@ -111,26 +101,25 @@ Question reformulée :"""
 
         return [n for _, n in ranked_nodes[:top_k]]
 
-    def retrieve_context(self, question: str, mode: str, top_k: int = 3):
-        logger.info(f"📥 Récupération du contexte pour le mode « {mode} »...")
-        retriever = self.indexes[mode]["index"].as_retriever(similarity_top_k=top_k)
+    def retrieve_context(self, question: str, top_k: int = 3):
+        logger.info(f"📥 Récupération du contexte...")
+        retriever = self.index.as_retriever(similarity_top_k=top_k)
         retrieved_nodes = retriever.retrieve(question)
         reranked_nodes = self.rerank_nodes(question, retrieved_nodes, top_k)
         context = "\n\n".join(n.get_content()[:500] for n in reranked_nodes)
         return context, reranked_nodes
 
-    def ask(self, question_raw: str, mode: str = "docling") -> str:
+    def ask(self, question_raw: str) -> str:
         logger.info(f"💬 Question reçue : {question_raw}")
         if len(question_raw.split()) <= 3:
-            context_sample, _ = self.retrieve_context(question_raw, mode, 3)
-            reformulated = self.reformulate_with_context( question_raw, context_sample)
+            context_sample, _ = self.retrieve_context(question_raw, top_k=3)
+            reformulated = self.reformulate_with_context(question_raw, context_sample)
         else:
-            reformulated = self.reformulate_question( question_raw)
+            reformulated = self.reformulate_question(question_raw)
 
-        print(f"📝 Question reformulée : {reformulated}")
-        question = reformulated
-        top_k = self.get_adaptive_top_k(question)
-        context, _ = self.retrieve_context(question, mode, top_k)
+        logger.info(f"📝 Question reformulée : {reformulated}")
+        top_k = self.get_adaptive_top_k(reformulated)
+        context, _ = self.retrieve_context(reformulated, top_k)
 
         prompt = f"""### Instruction: En te basant uniquement sur le contexte ci-dessous, réponds à la question de manière précise et en français.
 
@@ -139,7 +128,7 @@ Si la réponse ne peut pas être déduite du contexte, indique : "Information no
 Contexte :
 {context}
 
-Question : {question}
+Question : {reformulated}
 ### Réponse:"""
 
         output = self.llm(prompt, max_tokens=MAX_TOKENS, stop=["### Instruction:"], stream=False)
@@ -147,10 +136,10 @@ Question : {question}
         logger.info(f"🧠 Réponse générée : {response[:120]}{'...' if len(response) > 120 else ''}")
         return response
 
-    def ask_stream(self, question: str, mode: str = "docling"):
+    def ask_stream(self, question: str):
         logger.info(f"💬 [Stream] Question reçue : {question}")
         top_k = self.get_adaptive_top_k(question)
-        context, _ = self.retrieve_context(question, mode, top_k)
+        context, _ = self.retrieve_context(question, top_k)
 
         prompt = f"""### Instruction: En te basant uniquement sur le contexte ci-dessous, réponds à la question de manière précise et en français.
 

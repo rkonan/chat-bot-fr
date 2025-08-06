@@ -1,6 +1,8 @@
 # Fichiers et dossiers à ignorer
 llamavenv/
 models/
+chatbot-models/
 *.gguf
 __pycache__/
 *.pyc
+vectordb/
