@@ -3,7 +3,7 @@ name: 🚀 Deploy to Hugging Face Spaces
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
