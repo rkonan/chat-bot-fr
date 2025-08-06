@@ -85,7 +85,6 @@ multiprocess==0.70.18
 mypy_extensions==1.1.0
 narwhals==2.0.1
 nest-asyncio==1.6.0
-networkx==3.5
 ninja==1.11.1.4
 nltk==3.9.1
 numpy==2.2.6
