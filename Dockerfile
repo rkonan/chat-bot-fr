@@ -11,7 +11,11 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     libgl1 \
     libglib2.0-0 \
+    libomp-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# 🏠 Fix Streamlit PermissionError (écriture dans /.streamlit interdite)
+ENV HOME="/code"
 
 # 📁 Étape 3 : répertoire de travail
 WORKDIR /code
@@ -23,7 +27,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
  && pip install --no-cache-dir --prefer-binary -r requirements.txt
 
-# 📁 Étape 6 : copier le code de l'app
+# 📁 Étape 6 : copier tout le code de l'app
 COPY . .
 
 # 🌐 Étape 7 : exposer le port Streamlit
