@@ -7,6 +7,9 @@ from huggingface_hub import hf_hub_download
 import time
 
 
+# 🔧 Corrige le problème de PermissionError avec NLTK
+os.environ["NLTK_DATA"] = "/tmp/nltk_data"
+
 ENV = os.getenv("ENV", "space")
 
 logger = logging.getLogger("Streamlit")
@@ -15,6 +18,7 @@ handler = logging.StreamHandler()
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
 
 
 logger.info(f"ENV :{ENV}")
