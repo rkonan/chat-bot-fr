@@ -22,7 +22,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-
+ENV = os.getenv("ENV", "space")
 logger.info(f"ENV :{ENV}")
 
 #time.sleep(5)

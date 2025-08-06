@@ -1,10 +1,10 @@
 # Base LLM & embeddings
-llama-cpp-python==0.2.60
+llama_cpp_python==0.3.14
 sentence-transformers==2.5.1
 transformers>=4.30.0
 
 # LlamaIndex & Faiss
-llama-index==0.10.20
+llama-index==0.13.0
 llama-index-vector-stores-faiss
 faiss-cpu==1.7.4
 
