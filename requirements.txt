@@ -1,7 +1,42 @@
-llama-cpp-python>=0.2.60
-sentence-transformers
-llama-index>=0.10.20
-faiss-cpu
-streamlit
-numpy
-scikit-learn
+# === CORE RAG with LlamaIndex ===
+llama-index==0.13.0
+llama-index-core==0.13.0
+llama-index-cli==0.5.0
+llama-index-embeddings-huggingface==0.6.0
+llama-index-vector-stores-faiss==0.5.0
+llama-index-readers-file==0.5.0
+
+# === DOCILING INTEGRATION ===
+docling==2.43.0
+docling-core==2.44.1
+docling-ibm-models==3.9.0
+docling-parse==4.1.0
+llama-index-readers-llama-parse==0.5.0
+
+# === Embeddings & Models ===
+sentence-transformers==5.0.0
+transformers==4.54.1
+torch==2.7.1
+
+# === Vector Store ===
+faiss-cpu==1.11.0.post1
+
+# === LLM Backend (local or OpenAI) ===
+llama_cpp_python==0.3.14
+openai==1.98.0
+
+# === Document Parsing (optional, recommended) ===
+PyMuPDF==1.26.3         # PDF parsing
+pypdf==5.9.0            # Alternative PDF
+python-docx==1.2.0      # DOCX
+python-pptx==1.0.2      # PowerPoint
+markdown-it-py==3.0.0   # Markdown
+
+# === App / Interface ===
+streamlit==1.47.1
+
+# === Utilities ===
+pandas==2.2.3
+tqdm==4.67.1
+pydantic==2.11.7
+typing-extensions==4.14.1
