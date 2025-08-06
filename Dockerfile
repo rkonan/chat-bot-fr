@@ -10,34 +10,34 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 👤 Créer un utilisateur non-root
+# Créer utilisateur non-root
 RUN useradd -m appuser
 
-# 📁 Dossier de travail
+# Dossier de travail
 WORKDIR /code
 
-# Copier et installer les dépendances
+# Copier et installer les dépendances Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ✅ Télécharger punkt dans un dossier propre
+# 🔧 Créer le dossier NLTK + télécharger tous les packages nécessaires
 RUN mkdir -p /home/appuser/nltk_data && \
-    python -m nltk.downloader -d /home/appuser/nltk_data punkt
+    python -m nltk.downloader -d /home/appuser/nltk_data punkt stopwords
 
-# Copier le reste du code
+# Copier le code
 COPY . .
 
-# Donner les droits à appuser sur le code
-RUN chown -R appuser /code
+# Donner les droits
+RUN chown -R appuser /code /home/appuser/nltk_data
 
-# Utiliser l'utilisateur non-root
+# Utiliser utilisateur non-root
 USER appuser
 
-# ✅ Définir la variable d'environnement pour nltk
+# Définir variable d'environnement
 ENV NLTK_DATA=/home/appuser/nltk_data
 
-# Exposer le port Streamlit
+# Port pour Streamlit
 EXPOSE 7860
 
-# Démarrer l'application
+# Commande de lancement
 CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
