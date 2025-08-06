@@ -7,10 +7,12 @@ from huggingface_hub import hf_hub_download
 import time
 
 
-# 🔧 Corrige le problème de PermissionError avec NLTK
+import os
 os.environ["NLTK_DATA"] = "/tmp/nltk_data"
 
-ENV = os.getenv("ENV", "space")
+# Appliquer le patch avant tout import de llama_index
+from patches.llama_patch import patch_llamaindex_nltk
+patch_llamaindex_nltk()
 
 logger = logging.getLogger("Streamlit")
 logger.setLevel(logging.INFO)
