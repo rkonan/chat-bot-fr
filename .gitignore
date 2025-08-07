@@ -6,3 +6,4 @@ chatbot-models/
 __pycache__/
 *.pyc
 vectordb/
+venv310/
