@@ -57,8 +57,7 @@ Contexte :
 
 Question initiale : {question}
 Question reformulée :"""
-        output = self.llm(prompt, max_tokens=128, stop=["
-"], stream=False)
+        output = self.llm(prompt, max_tokens=128, stop=[""], stream=False)
         reformulated = output["choices"][0]["text"].strip()
         logger.info(f"📝 Reformulée avec contexte : {reformulated}")
         return reformulated
@@ -74,6 +73,9 @@ Question reformulée :"""
     def rerank_nodes(self, question: str, retrieved_nodes, top_k: int = 3):
         logger.info(f"🔍 Re-ranking des {len(retrieved_nodes)} chunks pour la question : « {question} »")
         q_emb = self.embed_model.get_query_embedding(question)
+        if q_emb is None:
+            logger.warning("Embedding de la wuestion introuvable")
+            return retrieved_nodes[:top_k]
         scored_nodes = []
 
         for node in retrieved_nodes:
