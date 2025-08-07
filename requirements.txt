@@ -1,4 +1,4 @@
-llama-cpp-python==0.3.14
+#llama-cpp-python==0.3.14
 sentence-transformers==5.0.0
 transformers==4.54.1
 llama-index==0.13.0

@@ -20,18 +20,24 @@ ENV HOME="/code"
 # 📁 Étape 3 : répertoire de travail
 WORKDIR /code
 
-# 🔄 Étape 4 : copier les requirements
+# 📥 Étape 4 : copier la wheel précompilée AVANT requirements
+COPY wheels/ ./wheels/
+
+# ⚡ Étape 5 : install pip + llama-cpp-python via wheel locale
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+ && pip install --no-cache-dir ./wheels/llama_cpp_python-0.3.14-*.whl
+
+# 📄 Étape 6 : copier le requirements sans llama-cpp-python
 COPY requirements.txt .
 
-# ⚡ Étape 5 : mise à jour pip + installation rapide
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
- && pip install --no-cache-dir --prefer-binary -r requirements.txt
+# 📦 Étape 7 : installer le reste
+RUN pip install --no-cache-dir --prefer-binary -r requirements.txt
 
-# 📁 Étape 6 : copier tout le code de l'app
+# 📁 Étape 8 : copier le reste du code de l'app
 COPY . .
 
-# 🌐 Étape 7 : exposer le port Streamlit
+# 🌐 Étape 9 : exposer le port Streamlit
 EXPOSE 7860
 
-# 🚀 Étape 8 : lancer l'application
+# 🚀 Étape 10 : lancer l'application
 CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
