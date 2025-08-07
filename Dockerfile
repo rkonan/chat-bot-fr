@@ -14,30 +14,37 @@ RUN apt-get update && apt-get install -y \
     libomp-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 🏠 Fix Streamlit PermissionError (écriture dans /.streamlit interdite)
+# 👤 Étape 3 : Créer un utilisateur non-root "appuser"
+RUN useradd -ms /bin/bash appuser
+
+# 📁 Étape 4 : Créer le dossier de travail avec droits pour appuser
+WORKDIR /code
+RUN mkdir -p /code/.streamlit && chown -R appuser:appuser /code
+
+# ⚠️ Étape 5 : définir le HOME pour Streamlit
 ENV HOME="/code"
 
-# 📁 Étape 3 : répertoire de travail
-WORKDIR /code
-
-# 📥 Étape 4 : copier la wheel précompilée AVANT requirements
+# 📥 Étape 6 : copier les wheels (llama-cpp-python précompilée)
 COPY wheels/ ./wheels/
 
-# ⚡ Étape 5 : install pip + llama-cpp-python via wheel locale
+# ⚡ Étape 7 : installer pip et la wheel locale
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
  && pip install --no-cache-dir ./wheels/llama_cpp_python-0.3.14-*.whl
 
-# 📄 Étape 6 : copier le requirements sans llama-cpp-python
+# 📄 Étape 8 : copier requirements.txt (sans llama-cpp-python dedans)
 COPY requirements.txt .
 
-# 📦 Étape 7 : installer le reste
+# 📦 Étape 9 : installer le reste des dépendances
 RUN pip install --no-cache-dir --prefer-binary -r requirements.txt
 
-# 📁 Étape 8 : copier le reste du code de l'app
+# 📁 Étape 10 : copier tout le code de l'application
 COPY . .
 
-# 🌐 Étape 9 : exposer le port Streamlit
+# 👤 Étape 11 : basculer en utilisateur non-root pour exécution
+USER appuser
+
+# 🌐 Étape 12 : exposer le port Streamlit
 EXPOSE 7860
 
-# 🚀 Étape 10 : lancer l'application
+# 🚀 Étape 13 : lancer Streamlit
 CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
