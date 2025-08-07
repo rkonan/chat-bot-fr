@@ -1,7 +1,9 @@
 import streamlit as st 
 from llama_cpp import Llama
 import os 
-from rag_model import RAGEngine
+#from rag_model import RAGEngine
+
+from rag_model_optimise import RAGEngine
 import logging
 from huggingface_hub import hf_hub_download
 import time
@@ -64,8 +66,17 @@ st.set_page_config(page_title="Chatbot RAG local",page_icon="🤖")
 
 @st.cache_resource
 def load_rag_engine():
-    rag = RAGEngine(model_path,vectors_path,faiss_index_path)
+    rag = RAGEngine(
+        model_path=model_path,
+        vector_path=vectors_path,
+        index_path=faiss_index_path,
+        model_threads=8  # ✅ plus rapide
+    )
+    
+    # 🔥 Warmup pour éviter latence au 1er appel
+    rag.llm("Bonjour", max_tokens=1)
     return rag
+
 
 rag=load_rag_engine()
 
