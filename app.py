@@ -1,9 +1,9 @@
 import streamlit as st 
 from llama_cpp import Llama
 import os 
-#from rag_model import RAGEngine
+from rag_model import RAGEngine
 
-from rag_model_optimise import RAGEngine
+#from rag_model_optimise import RAGEngine
 import logging
 from huggingface_hub import hf_hub_download
 import time
