@@ -32,7 +32,7 @@ class OllamaClient:
     Minimal Ollama client for /api/generate (text completion) with streaming support.
     Docs: https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
     """
-    def __init__(self, model: str, host: Optional[str] = None, timeout: int = 120):
+    def __init__(self, model: str, host: Optional[str] = None, timeout: int = 300):
         self.model = model
         self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
         self.timeout = timeout
@@ -108,6 +108,7 @@ class RAGEngine:
             ollama_host: override OLLAMA_HOST (default http://localhost:11434)
             ollama_opts: extra Ollama options (e.g., temperature, top_p, num_gpu, num_thread)
         """
+        logger.info(f"🔎 rag_model_ollama source: {__file__}")
         logger.info("📦 Initialisation du moteur RAG (Ollama)...")
         # Build options
         opts = dict(ollama_opts or {})
@@ -281,4 +282,4 @@ Question : {question}
 
         logger.info("📡 Début du streaming de la réponse...")
         for token in self._complete_stream(prompt, stop=["### Instruction:"], max_tokens=MAX_TOKENS):
-            print(token, end="", flush=True)
+            yield token

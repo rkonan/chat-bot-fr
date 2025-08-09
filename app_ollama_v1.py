@@ -6,7 +6,7 @@ import streamlit as st
 from huggingface_hub import hf_hub_download
 
 # ✅ Nouveau moteur RAG (Ollama)
-from rag_model_ollama import RAGEngine
+from rag_model_ollama_v1 import RAGEngine
 
 # --- Config & logs ---
 os.environ.setdefault("NLTK_DATA", "/home/appuser/nltk_data")
@@ -50,12 +50,14 @@ ollama_host = st.sidebar.text_input("Ollama host", value=default_host, help="Ex:
 
 # Propose des modèles déjà présents ou courants
 suggested_models = [
+    "noushermes_rag",
     "mistral",            # présent chez toi
     "gemma3",             # présent chez toi
     "deepseek-r1",        # présent chez toi (raisonnement long, plus lent)
     "granite3.3",         # présent chez toi
     "llama3.1:8b-instruct-q4_K_M",
     "nous-hermes2:Q4_K_M",
+
 ]
 model_name = st.sidebar.selectbox("Modèle Ollama", options=suggested_models, index=0)
 num_threads = st.sidebar.slider("Threads (hint)", min_value=2, max_value=16, value=6, step=1)
@@ -65,7 +67,7 @@ st.title("🤖 Chatbot RAG Local (Ollama)")
 
 # --- Cache du moteur ---
 @st.cache_resource(show_spinner=True)
-def load_rag_engine(_model_name: str, _host: str, _threads: int, _temp: float):
+def load_rag_engine(_model_name: str, _host: str, _threads: int, _temp: float,_version: int =1):
     # Options pour Ollama
     ollama_opts = {
         "num_thread": int(_threads),
@@ -83,12 +85,14 @@ def load_rag_engine(_model_name: str, _host: str, _threads: int, _temp: float):
 
     # Warmup léger (évite la latence au 1er token)
     try:
-        _ = rag._complete("Bonjour", max_tokens=1)
+        gen = rag._complete_stream("Bonjour", max_tokens=1)
+        next(gen,"")
+
     except Exception as e:
         logger.warning(f"Warmup Ollama échoué: {e}")
     return rag
 
-rag = load_rag_engine(model_name, ollama_host, num_threads, temperature)
+rag = load_rag_engine(model_name, ollama_host, num_threads, temperature,_version=2)
 
 # --- Chat simple ---
 user_input = st.text_area("Posez votre question :", height=120, placeholder="Ex: Quels sont les traitements appliqués aux images ?")
