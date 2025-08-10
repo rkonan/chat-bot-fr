@@ -4,8 +4,11 @@ import logging
 import time
 from typing import List, Optional, Dict, Any, Iterable, Tuple
 import requests
-import faiss
 import json
+import codecs
+import faiss
+from pathlib import Path
+
 from llama_index.core import VectorStoreIndex
 from llama_index.core.schema import TextNode
 from llama_index.vector_stores.faiss import FaissVectorStore
@@ -22,20 +25,27 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 MAX_TOKENS = 64
-DEFAULT_STOPS = ["### Réponse:", "\n\n", "###"]
+# évite "\n\n" qui coupe trop tôt
+DEFAULT_STOPS = ["###"]
 
 # ---------- Client Ollama (use /api/generate, no options) ----------
 class OllamaClient:
     def __init__(self, model: str, host: Optional[str] = None, timeout: int = 300):
+        # Laisse passer l'env, fallback sur 11435 si tu utilises un proxy mitm
         self.model = model
-        self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11435") #mode proxy
-        #self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11435")
         self.timeout = timeout
         self._gen_url = self.host.rstrip("/") + "/api/generate"
 
-    def generate(self, prompt: str, stop: Optional[List[str]] = None,
-                 max_tokens: Optional[int] = None, stream: bool = False,
-                 options: Optional[Dict[str, Any]] = None, raw: bool = False) -> str | Iterable[str]:
+    def generate(
+        self,
+        prompt: str,
+        stop: Optional[List[str]] = None,
+        max_tokens: Optional[int] = None,
+        stream: bool = False,
+        options: Optional[Dict[str, Any]] = None,
+        raw: bool = False
+    ):
         payload: Dict[str, Any] = {
             "model": self.model,
             "prompt": prompt,
@@ -47,35 +57,72 @@ class OllamaClient:
             payload["stop"] = stop
         if max_tokens is not None:
             payload["num_predict"] = int(max_tokens)
-        # ❌ aucune "options" pour laisser Ollama auto-tuner
+        # ❌ pas d'options → laisser Ollama auto‑tuner
 
         if stream:
-            with requests.post(self._gen_url, json=payload, stream=True, timeout=self.timeout) as r:
-                r.raise_for_status()
-                for line in r.iter_lines(decode_unicode=True):
-                    if not line:
-                        continue
-                    try:
-                        data = json.loads(line)
-                    except Exception:
-                        continue
-                    if "response" in data and not data.get("done"):
-                        yield data["response"]
-                    if data.get("done"):
-                        break
-            return
+            # Générateur interne pour ne PAS transformer generate() en générateur côté non‑stream
+            def _ndjson_stream():
+                json_dec = json.JSONDecoder()
+                utf8_dec = codecs.getincrementaldecoder("utf-8")()
+                buf = ""  # buffer texte
 
+                with requests.post(self._gen_url, json=payload, stream=True, timeout=self.timeout) as r:
+                    r.raise_for_status()
+
+                    # Lire en BYTES, décoder UTF‑8 incrémentalement
+                    for chunk in r.iter_content(chunk_size=8192):
+                        if not chunk:
+                            continue
+                        text = utf8_dec.decode(chunk)
+                        if not text:
+                            continue
+                        buf += text
+
+                        # Plusieurs objets NDJSON peuvent arriver d'un coup → raw_decode en boucle
+                        while True:
+                            buf_strip = buf.lstrip()
+                            if not buf_strip:
+                                buf = ""
+                                break
+                            try:
+                                obj, idx = json_dec.raw_decode(buf_strip)
+                            except json.JSONDecodeError:
+                                # besoin de plus de données
+                                break
+                            consumed = len(buf) - len(buf_strip) + idx
+                            buf = buf[consumed:]
+
+                            if "response" in obj and not obj.get("done"):
+                                yield obj["response"]
+                            if obj.get("done"):
+                                return
+
+                    # flush potentiel (caractère UTF‑8 coupé)
+                    tail = utf8_dec.decode(b"", final=True)
+                    if tail:
+                        buf += tail
+                        # on pourrait tenter un dernier raw_decode si besoin
+
+            return _ndjson_stream()
+
+        # --- Non-stream : renvoie une STRING ---
         r = requests.post(self._gen_url, json=payload, timeout=self.timeout)
         r.raise_for_status()
         data = r.json()
         return data.get("response", "")
 
-# ---------- RAG Engine (lazy load + heuristique GK) ----------
-class RAGEngine:
-    def __init__(self, model_name: str, vector_path: str, index_path: str,
-                 model_threads: int = 4, ollama_host: Optional[str] = None,
-                 ollama_opts: Optional[Dict[str, Any]] = None):
 
+# ---------- RAG Engine (lazy load + meta + heuristique GK + toggle) ----------
+class RAGEngine:
+    def __init__(
+        self,
+        model_name: str,
+        vector_path: str,
+        index_path: str,
+        model_threads: int = 4,
+        ollama_host: Optional[str] = None,
+        ollama_opts: Optional[Dict[str, Any]] = None
+    ):
         logger.info(f"🔎 rag_model_ollama source: {__file__}")
         logger.info("📦 Initialisation du moteur (lazy RAG)...")
 
@@ -85,13 +132,30 @@ class RAGEngine:
         # chemins pour chargement différé
         self.vector_path = vector_path
         self.index_path = index_path
+        vec_dir = str(Path(vector_path).parent)
+        self.meta_path = os.path.join(vec_dir, "meta.pkl")
 
         # objets RAG paresseux
         self.embed_model: Optional[HuggingFaceEmbedding] = None
         self.index: Optional[VectorStoreIndex] = None
         self._loaded = False
 
+        # mode: "auto" | "rag" | "llm"
+        self.rag_mode: str = "auto"
+
+        # dernier lot de sources utilisées (pour affichage UI)
+        self.last_sources: List[Dict[str, Any]] = []
+
         logger.info("✅ Moteur initialisé (sans charger FAISS ni chunks).")
+
+    # --- contrôle du mode depuis l'app ---
+    def set_mode(self, mode: str):
+        mode = mode.lower().strip()
+        if mode not in ("auto", "rag", "llm"):
+            logger.warning(f"Mode inconnu '{mode}', fallback auto.")
+            mode = "auto"
+        self.rag_mode = mode
+        logger.info(f"🔧 Mode RAG réglé sur: {self.rag_mode}")
 
     # ---------- lazy loader ----------
     def _ensure_loaded(self):
@@ -103,7 +167,26 @@ class RAGEngine:
         # 1) chunks
         with open(self.vector_path, "rb") as f:
             chunk_texts: List[str] = pickle.load(f)
-        nodes = [TextNode(text=chunk) for chunk in chunk_texts]
+
+        # 1bis) métadonnées (optionnelles)
+        metas = None
+        if os.path.exists(self.meta_path):
+            try:
+                with open(self.meta_path, "rb") as mf:
+                    metas = pickle.load(mf)
+                if isinstance(metas, list) and len(metas) != len(chunk_texts):
+                    logger.warning("meta.pkl longueur différente des chunks: sources partielles.")
+            except Exception as e:
+                logger.warning(f"Impossible de charger meta.pkl: {e}")
+                metas = None
+
+        nodes: List[TextNode] = []
+        for i, chunk in enumerate(chunk_texts):
+            md = {}
+            if metas and i < len(metas) and isinstance(metas[i], dict):
+                md = metas[i]
+            n = TextNode(text=chunk, metadata=md)
+            nodes.append(n)
 
         # 2) index FAISS
         faiss_index = faiss.read_index(self.index_path)
@@ -121,12 +204,12 @@ class RAGEngine:
     # ---------- génération ----------
     def _complete_stream(self, prompt: str, stop: Optional[List[str]] = None,
                          max_tokens: int = MAX_TOKENS, raw: bool = False):
-        return self.llm.generate(prompt=prompt, stop=stop, max_tokens=max_tokens,
+        return self.llm.generate(prompt=prompt, stop=stop or DEFAULT_STOPS, max_tokens=max_tokens,
                                  stream=True, raw=raw)
 
     def _complete(self, prompt: str, stop: Optional[List[str]] = None,
                   max_tokens: int = 128, raw: bool = False) -> str:
-        text = self.llm.generate(prompt=prompt, stop=stop, max_tokens=max_tokens,
+        text = self.llm.generate(prompt=prompt, stop=stop or DEFAULT_STOPS, max_tokens=max_tokens,
                                  stream=False, raw=raw)
         return (text or "").strip()
 
@@ -206,15 +289,43 @@ class RAGEngine:
         retriever = self.index.as_retriever(similarity_top_k=top_k)  # type: ignore
         retrieved_nodes = retriever.retrieve(question)
         scores, nodes = self.rerank_nodes(question, retrieved_nodes, top_k)
-        context = "\n\n".join(n.get_content()[:500] for n in nodes)
+
+        # Construire le contexte (cap par node pour éviter les prompts énormes)
+        context_parts = []
+        self.last_sources = []
+        for n in nodes:
+            txt = n.get_content()[:1200]
+            context_parts.append(txt)
+            md = getattr(n, "metadata", {}) or {}
+            self.last_sources.append({
+                "doc": md.get("doc"),
+                "page": md.get("page"),
+                "title": md.get("title"),
+                "preview": txt[:200]
+            })
+        context = "\n\n".join(context_parts)
         return context, nodes, scores
 
+    # ---------- util ----------
+    def get_last_sources(self) -> List[Dict[str, Any]]:
+        """Liste de sources de la dernière retrieval (si RAG), pour affichage UI."""
+        return self.last_sources
+
     # ---------- API publique ----------
+    def _decide_use_rag(self, question: str, is_hello: bool) -> bool:
+        # toggle prioritaire
+        if self.rag_mode == "rag":
+            return True
+        if self.rag_mode == "llm":
+            return False
+        # auto
+        return (self._loaded and not is_hello) or (not self._loaded and self._should_use_rag_fast(question))
+
     def ask(self, question: str, allow_fallback: bool = False) -> str:
         logger.info(f"💬 [Non-stream] Question reçue : {question}")
         is_hello = self._is_greeting(question)
 
-        use_rag = (self._loaded and not is_hello) or (not self._loaded and self._should_use_rag_fast(question))
+        use_rag = self._decide_use_rag(question, is_hello)
         if use_rag:
             top_k = self.get_adaptive_top_k(question)
             context, _, scores = self.retrieve_context(question, top_k)
@@ -238,7 +349,7 @@ class RAGEngine:
         logger.info(f"💬 [Stream] Question reçue : {question}")
         is_hello = self._is_greeting(question)
 
-        use_rag = (self._loaded and not is_hello) or (not self._loaded and self._should_use_rag_fast(question))
+        use_rag = self._decide_use_rag(question, is_hello)
         if use_rag:
             top_k = self.get_adaptive_top_k(question)
             context, _, scores = self.retrieve_context(question, top_k)

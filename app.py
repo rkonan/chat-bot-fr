@@ -3,12 +3,10 @@ import logging
 import streamlit as st
 from huggingface_hub import hf_hub_download
 
-# ✅ Nouveau moteur RAG (sans ollama_opts)
-from rag_model_ollama_v1 import RAGEngine
+from rag_model_ollama import RAGEngine
 
 # --- Config & logs ---
 os.environ.setdefault("NLTK_DATA", "/home/appuser/nltk_data")
-
 logger = logging.getLogger("Streamlit")
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
@@ -39,58 +37,66 @@ else:
         repo_type="dataset"
     )
 
-# --- UI Sidebar ---
+# --- Sidebar ---
 st.sidebar.header("⚙️ Paramètres")
-default_host = os.getenv("OLLAMA_HOST", "http://localhost:11435")
+default_host = os.getenv("OLLAMA_HOST", "http://localhost:11435")  # via proxy mitm si besoin
 ollama_host = st.sidebar.text_input("Ollama host", value=default_host)
 suggested_models = [
     "qwen2.5:3b-instruct-q4_K_M",
-    "noushermes_rag",
     "mistral",
     "gemma3",
     "deepseek-r1",
     "granite3.3",
     "llama3.1:8b-instruct-q4_K_M",
-    "nous-hermes2:Q4_K_M",
 ]
 model_name = st.sidebar.selectbox("Modèle Ollama", options=suggested_models, index=0)
-num_threads = st.sidebar.slider("Threads (hint)", min_value=2, max_value=16, value=6, step=1)
-temperature = st.sidebar.slider("Température", min_value=0.0, max_value=1.5, value=0.1, step=0.1)
+rag_mode = st.sidebar.selectbox("Mode RAG", options=["Auto", "RAG", "LLM pur"], index=0)
 
-st.title("🤖 Chatbot RAG Local (Ollama)")
+st.title("🤖 Chatbot RAG Local (Ollama) — lazy + meta + toggle")
 
 # --- Cache du moteur ---
 @st.cache_resource(show_spinner=True)
-def load_rag_engine(_model_name: str, _host: str, _threads: int, _temp: float):
+def load_rag_engine(_model_name: str, _host: str):
     os.environ["OLLAMA_KEEP_ALIVE"] = "15m"
-    rag = RAGEngine(
+    return RAGEngine(
         model_name=_model_name,
         vector_path=vectors_path,
         index_path=faiss_index_path,
-        model_threads=_threads,
+        model_threads=4,
         ollama_host=_host
-        # ❌ pas d'ollama_opts → Ollama choisit les defaults
     )
-    return rag
 
-rag = load_rag_engine(model_name, ollama_host, num_threads, temperature)
+rag = load_rag_engine(model_name, ollama_host)
+# appliquer le mode sélectionné
+rag.set_mode({"Auto": "auto", "RAG": "rag", "LLM pur": "llm"}[rag_mode])
 
-# --- Chat simple ---
+# --- Chat ---
 user_input = st.text_area("Posez votre question :", height=120,
                           placeholder="Ex: Quels sont les traitements appliqués aux images ?")
 col1, col2 = st.columns([1, 1])
 
-# if col1.button("Envoyer"):
-#     if user_input.strip():
-#         with st.spinner("Génération en cours..."):
-#             try:
-#                 response = rag.ask(user_input)
-#                 st.markdown("**Réponse :**")
-#                 st.success(response)
-#             except Exception as e:
-#                 st.error(f"Erreur pendant la génération: {e}")
-#     else:
-#         st.info("Saisissez une question.")
+if col1.button("Envoyer (non-stream)"):
+    if user_input.strip():
+        with st.spinner("Génération en cours..."):
+            try:
+                response = rag.ask(user_input)
+                st.markdown("**Réponse :**")
+                st.success(response)
+
+                # Affiche les sources si RAG a été utilisé
+                sources = rag.get_last_sources()
+                if sources:
+                    with st.expander("📚 Sources (RAG)"):
+                        for i, s in enumerate(sources, 1):
+                            st.markdown(
+                                f"**{i}.** {s.get('doc','?')} "
+                                f"(page {s.get('page','?')}) — *{s.get('title') or 'Sans titre'}*"
+                            )
+                            st.code(s.get("preview", ""), language="markdown")
+            except Exception as e:
+                st.error(f"Erreur pendant la génération: {e}")
+    else:
+        st.info("Saisissez une question.")
 
 if col2.button("Envoyer (stream)"):
     if user_input.strip():
@@ -101,7 +107,18 @@ if col2.button("Envoyer (stream)"):
                 for token in rag.ask_stream(user_input):
                     acc += token
                     ph.markdown(acc)
-                st.balloons()
+
+                # Affiche les sources si RAG a été utilisé
+                sources = rag.get_last_sources()
+                if sources:
+                    with st.expander("📚 Sources (RAG)"):
+                        for i, s in enumerate(sources, 1):
+                            st.markdown(
+                                f"**{i}.** {s.get('doc','?')} "
+                                f"(page {s.get('page','?')}) — *{s.get('title') or 'Sans titre'}*"
+                            )
+                            st.code(s.get("preview", ""), language="markdown")
+
             except Exception as e:
                 st.error(f"Erreur pendant la génération (stream): {e}")
     else:
