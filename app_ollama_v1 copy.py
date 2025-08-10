@@ -3,11 +3,12 @@ import logging
 import streamlit as st
 from huggingface_hub import hf_hub_download
 
-# ✅ Nouveau moteur RAG (sans ollama_opts)
+# ✅ Nouveau moteur RAG (Ollama)
 from rag_model_ollama_v1 import RAGEngine
 
 # --- Config & logs ---
 os.environ.setdefault("NLTK_DATA", "/home/appuser/nltk_data")
+os.environ["OLLAMA_KEEP_ALIVE"] = "15m"  # garde le modèle chaud
 
 logger = logging.getLogger("Streamlit")
 logger.setLevel(logging.INFO)
@@ -20,7 +21,7 @@ if not logger.handlers:
 st.set_page_config(page_title="Chatbot RAG (Ollama)", page_icon="🤖")
 
 # --- ENV ---
-ENV = os.getenv("ENV", "local")
+ENV = os.getenv("ENV", "local")  # "local" ou "space"
 logger.info(f"ENV: {ENV}")
 
 # --- Chemins FAISS & chunks ---
@@ -41,8 +42,9 @@ else:
 
 # --- UI Sidebar ---
 st.sidebar.header("⚙️ Paramètres")
-default_host = os.getenv("OLLAMA_HOST", "http://localhost:11435")
+default_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 ollama_host = st.sidebar.text_input("Ollama host", value=default_host)
+
 suggested_models = [
     "qwen2.5:3b-instruct-q4_K_M",
     "noushermes_rag",
@@ -54,7 +56,7 @@ suggested_models = [
     "nous-hermes2:Q4_K_M",
 ]
 model_name = st.sidebar.selectbox("Modèle Ollama", options=suggested_models, index=0)
-num_threads = st.sidebar.slider("Threads (hint)", min_value=2, max_value=16, value=6, step=1)
+num_threads = st.sidebar.slider("Threads", min_value=2, max_value=16, value=6, step=1)
 temperature = st.sidebar.slider("Température", min_value=0.0, max_value=1.5, value=0.1, step=0.1)
 
 st.title("🤖 Chatbot RAG Local (Ollama)")
@@ -62,35 +64,48 @@ st.title("🤖 Chatbot RAG Local (Ollama)")
 # --- Cache du moteur ---
 @st.cache_resource(show_spinner=True)
 def load_rag_engine(_model_name: str, _host: str, _threads: int, _temp: float):
-    os.environ["OLLAMA_KEEP_ALIVE"] = "15m"
+    ollama_opts = {
+        "num_thread": int(_threads),
+        "temperature": float(_temp),
+        "num_ctx": 512,   # identique au CLI
+        "num_batch": 16,
+    }
+
     rag = RAGEngine(
         model_name=_model_name,
         vector_path=vectors_path,
         index_path=faiss_index_path,
         model_threads=_threads,
-        ollama_host=_host
-        # ❌ pas d'ollama_opts → Ollama choisit les defaults
+        ollama_host=_host,
+        ollama_opts=ollama_opts
     )
+
+    # Warmup proche du CLI
+    try:
+        list(rag._complete_stream("Bonjour", max_tokens=8))
+    except Exception as e:
+        logger.warning(f"Warmup Ollama échoué: {e}")
+
     return rag
 
 rag = load_rag_engine(model_name, ollama_host, num_threads, temperature)
 
-# --- Chat simple ---
+# --- Chat ---
 user_input = st.text_area("Posez votre question :", height=120,
                           placeholder="Ex: Quels sont les traitements appliqués aux images ?")
 col1, col2 = st.columns([1, 1])
 
-# if col1.button("Envoyer"):
-#     if user_input.strip():
-#         with st.spinner("Génération en cours..."):
-#             try:
-#                 response = rag.ask(user_input)
-#                 st.markdown("**Réponse :**")
-#                 st.success(response)
-#             except Exception as e:
-#                 st.error(f"Erreur pendant la génération: {e}")
-#     else:
-#         st.info("Saisissez une question.")
+if col1.button("Envoyer"):
+    if user_input.strip():
+        with st.spinner("Génération en cours..."):
+            try:
+                response = rag.ask(user_input)
+                st.markdown("**Réponse :**")
+                st.success(response)
+            except Exception as e:
+                st.error(f"Erreur pendant la génération: {e}")
+    else:
+        st.info("Saisissez une question.")
 
 if col2.button("Envoyer (stream)"):
     if user_input.strip():

@@ -24,12 +24,10 @@ if not logger.handlers:
 MAX_TOKENS = 64
 DEFAULT_STOPS = ["### Réponse:", "\n\n", "###"]
 
-# ---------- Client Ollama (use /api/generate, no options) ----------
 class OllamaClient:
     def __init__(self, model: str, host: Optional[str] = None, timeout: int = 300):
         self.model = model
-        self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11435") #mode proxy
-        #self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
         self.timeout = timeout
         self._gen_url = self.host.rstrip("/") + "/api/generate"
 
@@ -47,7 +45,7 @@ class OllamaClient:
             payload["stop"] = stop
         if max_tokens is not None:
             payload["num_predict"] = int(max_tokens)
-        # ❌ aucune "options" pour laisser Ollama auto-tuner
+        # ❌ AUCUNE options → laisser Ollama auto-tuner
 
         if stream:
             with requests.post(self._gen_url, json=payload, stream=True, timeout=self.timeout) as r:
@@ -70,55 +68,61 @@ class OllamaClient:
         data = r.json()
         return data.get("response", "")
 
-# ---------- RAG Engine (lazy load + heuristique GK) ----------
+
 class RAGEngine:
     def __init__(self, model_name: str, vector_path: str, index_path: str,
                  model_threads: int = 4, ollama_host: Optional[str] = None,
                  ollama_opts: Optional[Dict[str, Any]] = None):
-
         logger.info(f"🔎 rag_model_ollama source: {__file__}")
         logger.info("📦 Initialisation du moteur (lazy RAG)...")
 
-        # LLM prêt immédiatement
+        # -- LLM prêt tout de suite
         self.llm = OllamaClient(model=model_name, host=ollama_host)
 
-        # chemins pour chargement différé
+        # -- Chemins pour lazy load
         self.vector_path = vector_path
         self.index_path = index_path
 
-        # objets RAG paresseux
+        # -- Objets RAG, chargés plus tard
         self.embed_model: Optional[HuggingFaceEmbedding] = None
         self.index: Optional[VectorStoreIndex] = None
         self._loaded = False
 
         logger.info("✅ Moteur initialisé (sans charger FAISS ni chunks).")
 
-    # ---------- lazy loader ----------
+        # ❌ Pas de warmup “génération” ici ; le premier appel LLM sera rapide.
+        # (Si tu veux : décommente ce mini warmup 1 token)
+        # try:
+        #     list(self._complete_stream("Bonjour", max_tokens=1))
+        # except Exception as e:
+        #     logger.warning(f"Warmup échoué : {e}")
+
+    # ---------- Lazy loader ----------
     def _ensure_loaded(self):
         if self._loaded:
             return
         t0 = time.perf_counter()
         logger.info("⏳ Chargement lazy des données RAG (FAISS + chunks + embeddings)...")
 
-        # 1) chunks
+        # 1) Charger les chunks (pickle)
         with open(self.vector_path, "rb") as f:
             chunk_texts: List[str] = pickle.load(f)
         nodes = [TextNode(text=chunk) for chunk in chunk_texts]
 
-        # 2) index FAISS
+        # 2) Charger l'index FAISS
         faiss_index = faiss.read_index(self.index_path)
         vector_store = FaissVectorStore(faiss_index=faiss_index)
 
-        # 3) modèle d'embedding
+        # 3) Embedding model
         self.embed_model = HuggingFaceEmbedding(model_name="intfloat/multilingual-e5-base")
 
-        # 4) index LlamaIndex
+        # 4) Construire l'index LlamaIndex
         self.index = VectorStoreIndex(nodes=nodes, embed_model=self.embed_model, vector_store=vector_store)
 
         self._loaded = True
         logger.info(f"✅ RAG chargé en {time.perf_counter() - t0:.2f}s (lazy).")
 
-    # ---------- génération ----------
+    # ---------- Génération ----------
     def _complete_stream(self, prompt: str, stop: Optional[List[str]] = None,
                          max_tokens: int = MAX_TOKENS, raw: bool = False):
         return self.llm.generate(prompt=prompt, stop=stop, max_tokens=max_tokens,
@@ -130,45 +134,23 @@ class RAGEngine:
                                  stream=False, raw=raw)
         return (text or "").strip()
 
-    # ---------- heuristiques ----------
+    # ---------- Heuristiques légères ----------
     def _is_greeting(self, text: str) -> bool:
         s = text.lower().strip()
         return s in {"bonjour", "salut", "hello", "bonsoir", "hi", "coucou", "yo"} or len(s.split()) <= 2
 
-    def _looks_general_knowledge(self, q: str) -> bool:
-        q = q.lower().strip()
-        gk_keywords = (
-            "capitale", "date de naissance", "qui est", "qu'est-ce", "definition",
-            "définition", "histoire", "pays", "ville", "math", "science", "sport"
-        )
-        if len(q.split()) <= 9:
-            if any(k in q for k in gk_keywords) or q.startswith(("quelle est", "qui est", "qu'est-ce", "c'est quoi")):
-                return True
-        return False
-
     def _should_use_rag_fast(self, question: str) -> bool:
-        """N'active RAG que si on détecte des indices 'docs' / longueur significative."""
+        """Heuristique avant de charger RAG : éviter de charger pour une question triviale."""
         q = question.lower()
-
-        # 1) GK → pas de RAG
-        if self._looks_general_knowledge(q):
+        # Mots-clés “doc”, “procédure”, etc.
+        keywords = ("document", "docs", "procédure", "politique", "policy", "manuel", "guide", "pdf", "selon", "dans le contexte")
+        if any(k in q for k in keywords):
+            return True
+        # Longueur : si question courte, reste LLM
+        if len(q.split()) <= 7:
             return False
-
-        # 2) indices RAG
-        doc_keywords = (
-            "document", "docs", "procédure", "politique", "policy",
-            "manuel", "guide", "pdf", "docling", "selon", "dans le contexte",
-            "page", "section", "chapitre", "référence", "références", "conformément",
-            "note technique", "spécification", "spec", "architecture", "adr"
-        )
-        if any(k in q for k in doc_keywords):
-            return True
-
-        # 3) question longue → probable RAG
-        if len(q.split()) >= 14:
-            return True
-
-        return False
+        # Par défaut, pour les questions moyennes/longues → on utilisera RAG
+        return True
 
     def _decide_mode(self, scores: List[float], tau: float = 0.32, is_greeting: bool = False) -> str:
         if is_greeting:
@@ -176,7 +158,7 @@ class RAGEngine:
         top = scores[0] if scores else 0.0
         return "rag" if top >= tau else "llm"
 
-    # ---------- retrieval ----------
+    # ---------- Récupération ----------
     def get_adaptive_top_k(self, question: str) -> int:
         q = question.lower()
         if len(q.split()) <= 7:
@@ -189,7 +171,6 @@ class RAGEngine:
         return top_k
 
     def rerank_nodes(self, question: str, retrieved_nodes, top_k: int = 3) -> Tuple[List[float], List[TextNode]]:
-        assert self.embed_model is not None
         logger.info(f"🔍 Re-ranking des {len(retrieved_nodes)} chunks pour : « {question} »")
         q_emb = self.embed_model.get_query_embedding(question)
         scored_nodes: List[Tuple[float, TextNode]] = []
@@ -203,7 +184,7 @@ class RAGEngine:
 
     def retrieve_context(self, question: str, top_k: int = 3) -> Tuple[str, List[TextNode], List[float]]:
         self._ensure_loaded()
-        retriever = self.index.as_retriever(similarity_top_k=top_k)  # type: ignore
+        retriever = self.index.as_retriever(similarity_top_k=top_k)
         retrieved_nodes = retriever.retrieve(question)
         scores, nodes = self.rerank_nodes(question, retrieved_nodes, top_k)
         context = "\n\n".join(n.get_content()[:500] for n in nodes)
@@ -214,8 +195,8 @@ class RAGEngine:
         logger.info(f"💬 [Non-stream] Question reçue : {question}")
         is_hello = self._is_greeting(question)
 
-        use_rag = (self._loaded and not is_hello) or (not self._loaded and self._should_use_rag_fast(question))
-        if use_rag:
+        # ⚡ Heuristique avant de charger RAG
+        if not is_hello and (self._loaded or self._should_use_rag_fast(question)):
             top_k = self.get_adaptive_top_k(question)
             context, _, scores = self.retrieve_context(question, top_k)
             mode = self._decide_mode(scores, tau=0.32, is_greeting=is_hello)
@@ -238,8 +219,8 @@ class RAGEngine:
         logger.info(f"💬 [Stream] Question reçue : {question}")
         is_hello = self._is_greeting(question)
 
-        use_rag = (self._loaded and not is_hello) or (not self._loaded and self._should_use_rag_fast(question))
-        if use_rag:
+        # ⚡ Heuristique avant de charger RAG
+        if not is_hello and (self._loaded or self._should_use_rag_fast(question)):
             top_k = self.get_adaptive_top_k(question)
             context, _, scores = self.retrieve_context(question, top_k)
             mode = self._decide_mode(scores, tau=0.32, is_greeting=is_hello)
