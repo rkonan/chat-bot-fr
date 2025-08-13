@@ -1,0 +1,20 @@
+coloré : Est-ce que ce qui est mis en valeur est le fond noir ou le contour de la plante ?
+Quels modèles ont été testés dans le projet ?
+Quelles métriques principales et secondaires ont été utilisées ?
+Quels sont les objectifs du projet et le contexte d'usage ?
+Quelle est la performance globale atteinte par EfficientNetV2M ?
+Quelles difficultés spécifiques ont été rencontrées sur la classe Cassava ?
+Quelles stratégies de traitement des images Cassava ont été évaluées ?
+Quel a été l'impact du soft voting par rapport aux modèles individuels ?
+Quels jeux de données ont été retenus ou exclus et pourquoi ?
+Quels critères de qualité d'image ont été utilisés (flou, contraste, luminosité) ?
+Quel est le bilan global et les pistes d'amélioration proposées ?
+Quel modèle offre le meilleur compromis précision / vitesse d'inférence ?
+Pourquoi le stacking n'a-t-il pas surpassé le soft voting ?
+Comment les cartes de saillance ont-elles aidé l'interprétation des modèles ?
+Quelles limites du dataset ont impacté la généralisation ?
+Quelles sont les conclusions sur l'inclusion de la classe Cassava dans le modèle final ?
+Quelle a été la performance sur les sous-classes Cassava ?
+Quelles méthodes ont amélioré (ou dégradé) le F1-score sur Cassava ?
+Quels écarts de performance entre EfficientNetV2M, ResNet50V2 et SwinTransformer ?
+Que révèlent les cartes de saillance/Grad-CAM sur les zones d'attention ?

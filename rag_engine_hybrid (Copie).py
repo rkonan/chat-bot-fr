@@ -1,56 +1,28 @@
 import os
-import re
-import math
-import json
-import time
 import pickle
 import logging
-import argparse
+import time
 from typing import List, Optional, Dict, Any, Iterable, Tuple
-
 import requests
 import faiss
-from sentence_transformers.util import cos_sim
+import json
 from llama_index.core import VectorStoreIndex
 from llama_index.core.schema import TextNode
 from llama_index.vector_stores.faiss import FaissVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from sentence_transformers.util import cos_sim
+import argparse
 
 # === Logger ===
 logger = logging.getLogger("RAGHybrid")
 logger.setLevel(logging.INFO)
-_handler = logging.StreamHandler()
-_handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s"))
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s"))
 if not logger.handlers:
-    logger.addHandler(_handler)
+    logger.addHandler(handler)
 
 MAX_TOKENS = 64
 DEFAULT_STOPS = ["### Réponse:", "\n\n", "###"]
-
-# ---------- Stopwords & tokenization ----------
-_STOP = {
-    "fr": {
-        "le","la","les","un","une","des","de","du","au","aux","à","en","et","ou","où","dans","sur","par",
-        "pour","avec","sans","ce","cet","cette","ces","qui","que","quoi","dont","est","sont","été","être",
-        "sera","seront","d","l","se","sa","son","ses","leur","leurs","nos","notre","vos","votre","mes","mon","ma",
-        "nous","vous","ils","elles","il","elle","on","y","ne","pas","plus","moins","comme","afin","ainsi","donc",
-        "car","mais","si","quand","très","peu","bien","bon","mauvais"
-    },
-    "en": {
-        "the","a","an","and","or","of","to","in","on","for","with","without","is","are","was","were","be",
-        "been","being","this","that","these","those","who","whom","which","what","when","where","why","how",
-        "it","its","his","her","their","our","your","i","you","he","she","they","we","not","no","yes","very"
-    }
-}
-_STOPALL = _STOP["fr"] | _STOP["en"]
-_TOKEN_RE = re.compile(r"\w+", flags=re.UNICODE)
-
-def _tok(text: str) -> List[str]:
-    return [t for t in _TOKEN_RE.findall(text.lower()) if t]
-
-def _keywords(q: str) -> List[str]:
-    return [t for t in _tok(q) if len(t) >= 3 and t not in _STOPALL]
-
 
 # ---------- Client Ollama ----------
 class OllamaClient:
@@ -115,80 +87,6 @@ class OllamaClient:
         r.raise_for_status()
         return r.json()
 
-
-# ---------- BM25 & MMR helpers ----------
-class _BM25Okapi:
-    def __init__(self, docs: List[List[str]], k1: float = 1.5, b: float = 0.75):
-        self.k1 = k1
-        self.b = b
-               # corpus
-        self.docs = docs
-        self.N = len(docs)
-        self.df: Dict[str, int] = {}
-        self.tf: List[Dict[str, int]] = []
-        self.doc_len: List[int] = []
-        for tokens in docs:
-            tf_i: Dict[str, int] = {}
-            for t in tokens:
-                tf_i[t] = tf_i.get(t, 0) + 1
-            self.tf.append(tf_i)
-            dl = sum(tf_i.values())
-            self.doc_len.append(dl)
-            for t in tf_i:
-                self.df[t] = self.df.get(t, 0) + 1
-        self.avgdl = sum(self.doc_len)/self.N if self.N else 0.0
-        self.idf = {t: math.log(1 + (self.N - df + 0.5)/(df + 0.5)) for t, df in self.df.items()}
-
-    def get_scores(self, query_tokens: List[str]) -> List[float]:
-        scores = [0.0]*self.N
-        for i, tf_i in enumerate(self.tf):
-            denom = self.k1 * (1 - self.b + self.b * (self.doc_len[i]/(self.avgdl + 1e-9)))
-            s = 0.0
-            for t in query_tokens:
-                if t not in tf_i:
-                    continue
-                idf_t = self.idf.get(t, 0.0)
-                num = tf_i[t]*(self.k1 + 1)
-                s += idf_t * (num/(tf_i[t] + denom + 1e-9))
-            scores[i] = s
-        return scores
-
-    def search(self, query_tokens: List[str], top_k: int = 10) -> List[Tuple[int, float]]:
-        sc = self.get_scores(query_tokens)
-        if not sc:
-            return []
-        import numpy as _np
-        k = min(top_k, len(sc))
-        idx = _np.argpartition(-_np.array(sc, dtype=_np.float32), k-1)[:k]
-        idx = idx[_np.argsort(-_np.array([sc[i] for i in idx]))]
-        return [(int(i), float(sc[i])) for i in idx]
-
-
-def _mmr_select(vecs: List[List[float]], k: int, lam: float = 0.5) -> List[int]:
-    """Greedy MMR selection. Assumes vecs are comparable; we L2-normalize inside."""
-    import numpy as _np
-    V = _np.array(vecs, dtype=_np.float32)
-    V = V / (_np.linalg.norm(V, axis=1, keepdims=True) + 1e-9)
-    q = V.mean(axis=0, keepdims=True)  # centroid as relevance proxy
-    rel = (V @ q.T).flatten()
-    chosen: List[int] = []
-    cand = list(range(len(vecs)))
-    while cand and len(chosen) < k:
-        if not chosen:
-            j = int(_np.argmax(rel[cand]))
-            pick = cand[j]
-            cand.pop(j)
-            chosen.append(pick)
-            continue
-        div = _np.max(V[cand] @ V[chosen].T, axis=1)
-        mmr = lam*rel[cand] - (1-lam)*div
-        j = int(_np.argmax(mmr))
-        pick = cand[j]
-        cand.pop(j)
-        chosen.append(pick)
-    return chosen
-
-
 # ---------- RAG Engine (lazy) ----------
 class RAGEngine:
     def __init__(self, model_name: str, vector_path: str, index_path: str,
@@ -209,25 +107,6 @@ class RAGEngine:
         # petit cache de chat (historique simple si tu veux l’étendre plus tard)
         self.chat_history: List[Dict[str, str]] = []
 
-        # stats du dernier retrieval (alimentées par retrieve_context)
-        self._last_retrieval_stats: Optional[Dict[str, Any]] = None
-
-        # --- config retrieval shaping (variables d'environnement modifiables) ---
-        self.cfg = {
-            "base_top_k": int(os.getenv("RAG_BASE_TOPK", "8")),
-            "pool_k": int(os.getenv("RAG_POOL_K", "24")),            # taille du pool avant filtres
-            "score_min": float(os.getenv("RAG_SCORE_MIN", "0.0")),   # ex: 0.805 pour être strict
-            "alpha_top": float(os.getenv("RAG_ALPHA_TOP", "0.96")),  # conserve scores >= top*alpha
-            "use_lexical_filter": os.getenv("RAG_LEXICAL", "1") == "1",
-            "min_keyword_hits": int(os.getenv("RAG_MIN_HITS", "1")),
-            "use_mmr": os.getenv("RAG_MMR", "1") == "1",
-            "mmr_lambda": float(os.getenv("RAG_MMR_LAMBDA", "0.5")),
-            "use_rrf": os.getenv("RAG_RRF", "1") == "1",
-            "rrf_k": int(os.getenv("RAG_RRF_K", "60")),
-            "rerank_top": int(os.getenv("RAG_RERANK_TOP", "24")),    # pool pour RRF
-            "context_clip": int(os.getenv("RAG_CTX_CLIP", "500")),
-        }
-
         logger.info("✅ Moteur prêt (FAISS/chunks non chargés).")
 
     # ---------- lazy loader ----------
@@ -245,11 +124,6 @@ class RAGEngine:
         vector_store = FaissVectorStore(faiss_index=faiss_index)
         self.embed_model = HuggingFaceEmbedding(model_name="intfloat/multilingual-e5-base")
         self.index = VectorStoreIndex(nodes=nodes, embed_model=self.embed_model, vector_store=vector_store)
-
-        # BM25 pour RRF
-        self._bm25_docs = [_tok(t) for t in chunk_texts]
-        self._bm25 = _BM25Okapi(self._bm25_docs)
-        self._nodes_cache = nodes
 
         self._loaded = True
         logger.info(f"✅ RAG chargé en {time.perf_counter() - t0:.2f}s (lazy).")
@@ -272,8 +146,12 @@ class RAGEngine:
 
     def _should_use_rag_fast(self, question: str) -> bool:
         q = question.lower()
+
+        # GK → pas de RAG
         if self._looks_general_knowledge(q):
             return False
+
+        # indices “docs”
         doc_keywords = (
             "document", "docs", "procédure", "politique", "policy",
             "manuel", "guide", "pdf", "docling", "selon", "dans le contexte",
@@ -282,8 +160,11 @@ class RAGEngine:
         )
         if any(k in q for k in doc_keywords):
             return True
+
+        # longueur → probable RAG
         if len(q.split()) >= 14:
             return True
+
         return False
 
     def _decide_mode(self, scores: List[float], tau: float = 0.32, is_greeting: bool = False) -> str:
@@ -304,104 +185,25 @@ class RAGEngine:
         logger.info(f"🔢 top_k déterminé automatiquement : {top_k}")
         return top_k
 
-    def rerank_nodes(self, question: str, retrieved_nodes, top_k: int = 3) -> Tuple[List[float], List[TextNode], List[List[float]]]:
+    def rerank_nodes(self, question: str, retrieved_nodes, top_k: int = 3) -> Tuple[List[float], List[TextNode]]:
         assert self.embed_model is not None
         logger.info(f"🔍 Re-ranking des {len(retrieved_nodes)} chunks pour : « {question} »")
         q_emb = self.embed_model.get_query_embedding(question)
         scored_nodes: List[Tuple[float, TextNode]] = []
-        all_emb: List[List[float]] = []
         for node in retrieved_nodes:
             chunk_emb = self.embed_model.get_text_embedding(node.get_content())
             score = cos_sim(q_emb, chunk_emb).item()
             scored_nodes.append((score, node))
-            all_emb.append(chunk_emb)
         ranked = sorted(scored_nodes, key=lambda x: x[0], reverse=True)
         top = ranked[:top_k]
-        return [s for s, _ in top], [n for _, n in top], all_emb
+        return [s for s, _ in top], [n for _, n in top]
 
     def retrieve_context(self, question: str, top_k: int = 3) -> Tuple[str, List[TextNode], List[float]]:
         self._ensure_loaded()
-        pool_k = max(top_k, self.cfg["pool_k"], self.cfg["rerank_top"])
-        retriever = self.index.as_retriever(similarity_top_k=pool_k)  # type: ignore
+        retriever = self.index.as_retriever(similarity_top_k=top_k)  # type: ignore
         retrieved_nodes = retriever.retrieve(question)
-
-        # 1) Rerank cos_sim (E5)
-        scores, nodes, emb = self.rerank_nodes(question, retrieved_nodes, pool_k)
-        stats = {
-            "pool": len(retrieved_nodes),
-            "after_rrf": None,
-            "after_lexical": None,
-            "after_thresholds": None,
-            "after_mmr": None,
-            "final_k": None,
-        }
-
-        # 2) RRF avec BM25 (facultatif)
-        if self.cfg["use_rrf"]:
-            bm25_q = _keywords(question)  # tokenisé/stopwordé
-            bm_hits = self._bm25.search(bm25_q, top_k=pool_k)
-            # Rangs
-            rank_emb = {id(n): r+1 for r, n in enumerate(nodes)}
-            rank_bm = {}
-            for r, (idx, _) in enumerate(bm_hits):
-                try:
-                    rank_bm[id(self._nodes_cache[idx])] = r+1
-                except Exception:
-                    pass
-            # RRF
-            rrf_k = self.cfg["rrf_k"]
-            fused = []
-            for n in nodes:
-                re_ = rank_emb.get(id(n), 10**6)
-                rb_ = rank_bm.get(id(n), 10**6)
-                s = 1.0/(rrf_k + re_) + 1.0/(rrf_k + rb_)
-                fused.append((s, n))
-            fused.sort(key=lambda x: -x[0])
-            nodes = [n for _, n in fused]
-            # Recalcule des scores cos_sim alignés à l’ordre RRF
-            q_emb = self.embed_model.get_query_embedding(question)
-            scores = [cos_sim(q_emb, self.embed_model.get_text_embedding(n.get_content())).item() for n in nodes]
-            emb = [self.embed_model.get_text_embedding(n.get_content()) for n in nodes]
-            stats["after_rrf"] = len(nodes)
-        else:
-            stats["after_rrf"] = len(nodes)
-
-        # 3) Filtrage lexical (facultatif)
-        if self.cfg["use_lexical_filter"]:
-            kws = set(_keywords(question))
-            filtered = [(s, n, e) for s, n, e in zip(scores, nodes, emb)
-                        if sum(1 for t in _tok(n.get_content()) if t in kws) >= self.cfg["min_keyword_hits"]]
-            if filtered:
-                scores, nodes, emb = map(list, zip(*filtered))
-        stats["after_lexical"] = len(nodes)
-
-        # 4) Seuils & K adaptatif
-        if scores:
-            top_score = scores[0]
-            alpha = self.cfg["alpha_top"]
-            min_s = self.cfg["score_min"]
-            keep_idx = [i for i, s in enumerate(scores) if (s >= top_score * alpha) and (s >= min_s)]
-            if keep_idx:
-                scores = [scores[i] for i in keep_idx]
-                nodes = [nodes[i] for i in keep_idx]
-                emb   = [emb[i]   for i in keep_idx]
-        stats["after_thresholds"] = len(nodes)
-
-        # 5) MMR (diversification)
-        if self.cfg["use_mmr"] and len(nodes) > top_k:
-            mmr_ids = _mmr_select(emb, top_k, self.cfg["mmr_lambda"])
-            nodes = [nodes[i] for i in mmr_ids]
-            scores = [scores[i] for i in mmr_ids]
-            emb = [emb[i] for i in mmr_ids]
-        stats["after_mmr"] = len(nodes)
-
-        # 6) Clamp final à top_k
-        nodes = nodes[:top_k]
-        scores = scores[:top_k]
-        stats["final_k"] = len(nodes)
-
-        context = "\n\n".join(n.get_content()[: self.cfg["context_clip"]] for n in nodes)
-        self._last_retrieval_stats = stats
+        scores, nodes = self.rerank_nodes(question, retrieved_nodes, top_k)
+        context = "\n\n".join(n.get_content()[:500] for n in nodes)
         return context, nodes, scores
 
     # ---------- PREVIEW / DEBUG (sans LLM) ----------
@@ -412,7 +214,6 @@ class RAGEngine:
           - top_k_effectif
           - context (concaténé)
           - items: liste de {rank, score, node_id, snippet, full_len}
-          - stats: compteurs par étape (pool, after_rrf, after_lexical, after_thresholds, after_mmr, final_k)
         Ne fait AUCUN appel LLM.
         """
         k = top_k or self.get_adaptive_top_k(question)
@@ -437,7 +238,6 @@ class RAGEngine:
             "top_k_effectif": k,
             "context": context,
             "items": items,
-            "stats": self._last_retrieval_stats or {},
         }
         return preview
 
@@ -448,30 +248,6 @@ class RAGEngine:
         lines = []
         lines.append(f"### Question\n{preview['question']}\n")
         lines.append(f"**Mode décidé**: `{preview['mode_decision']}`   |   **Top‑K**: {preview['top_k_effectif']}\n")
-
-        # Bloc stats
-        st = preview.get("stats") or {}
-        if st:
-            lines.append("### Filtres appliqués (compteurs)")
-            pool = st.get("pool", 0)
-            a_rrf = st.get("after_rrf", 0)
-            a_lex = st.get("after_lexical", 0)
-            a_thr = st.get("after_thresholds", 0)
-            a_mmr = st.get("after_mmr", 0)
-            fin   = st.get("final_k", 0)
-            rm_rrf = pool - a_rrf
-            rm_lex = max(a_rrf - a_lex, 0)
-            rm_thr = max(a_lex - a_thr, 0)
-            rm_mmr = max(a_thr - a_mmr, 0)
-            lines.append(
-                f"- Pool initial : **{pool}**\n"
-                f"- Après RRF : **{a_rrf}**  (retirés: {rm_rrf})\n"
-                f"- Après filtrage lexical : **{a_lex}**  (retirés: {rm_lex})\n"
-                f"- Après seuils (alpha/score_min) : **{a_thr}**  (retirés: {rm_thr})\n"
-                f"- Après MMR : **{a_mmr}**  (retirés: {rm_mmr})\n"
-                f"- Final (min(K, reste)) : **{fin}**\n"
-            )
-
         lines.append("### Top K chunks")
         for it in preview["items"]:
             snippet = it['snippet'].replace('\n', ' ')
@@ -489,12 +265,6 @@ class RAGEngine:
         Log synthétique (INFO) des chunks sélectionnés.
         """
         logger.info(f"🔎 Mode: {preview['mode_decision']} | K={preview['top_k_effectif']}")
-        st = preview.get("stats") or {}
-        if st:
-            logger.info(
-                f"   Pool={st.get('pool')} -> RRF={st.get('after_rrf')} -> Lex={st.get('after_lexical')} "
-                f"-> Thr={st.get('after_thresholds')} -> MMR={st.get('after_mmr')} -> Final={st.get('final_k')}"
-            )
         for it in preview["items"]:
             head = it['snippet'][:120].replace('\n', ' ')
             tail = "…" if it['full_len'] > 120 else ""
@@ -527,10 +297,11 @@ class RAGEngine:
                 )
                 return self.llm.generate(prompt, stop=DEFAULT_STOPS, max_tokens=MAX_TOKENS, stream=False) or ""
 
-        # LLM pur → /api/chat
+        # LLM pur → /api/chat (pas d’options)
         messages = self.chat_history + [{"role": "user", "content": question}]
         result = self.llm.chat(messages, stream=False)
         content = result.get("message", {}).get("content", "")
+        # maj historique (simple, limite 8 tours pour rester léger)
         self.chat_history.extend([{"role": "user", "content": question},
                                   {"role": "assistant", "content": content}])
         if len(self.chat_history) > 16:
@@ -576,6 +347,7 @@ class RAGEngine:
             acc += tok
             yield tok
         logger.info("📡 Fin streaming (LLM pur).")
+        # maj historique
         self.chat_history.extend([{"role": "user", "content": question},
                                   {"role": "assistant", "content": acc}])
         if len(self.chat_history) > 16:

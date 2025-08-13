@@ -1,0 +1,199 @@
+(llamavenv) rkonan@rkonan-ThinkPad-T460:~/chatbot-project$ python test_preview.py   --vector vectordb/chunks.pkl   --index  vectordb/index.fais
+s   --k 8   --q "Quels traitements d'images ont été appliqués ?"      "Résume la pipeline d'entraînement"      "Quelles sont les métriques fina
+les ?"
+[2025-08-10 21:37:02,916] INFO - 📦 Initialisation du moteur (hybride, lazy, no-opts)...
+[2025-08-10 21:37:02,916] INFO - ✅ Moteur prêt (FAISS/chunks non chargés).
+[2025-08-10 21:37:02,916] INFO - ⏳ Chargement lazy des données RAG (FAISS + chunks + embeddings)...
+/home/rkonan/chatbot-project/llamavenv/lib/python3.12/site-packages/torch/nn/modules/module.py:1762: FutureWarning: `encoder_attention_mask` is deprecated and will be removed in version 4.55.0 for `XLMRobertaSdpaSelfAttention.forward`.
+  return forward_call(*args, **kwargs)
+[2025-08-10 21:38:02,571] INFO - ✅ RAG chargé en 59.65s (lazy).
+[2025-08-10 21:38:02,765] INFO - 🔍 Re-ranking des 8 chunks pour : « Quels traitements d'images ont été appliqués ? »
+### Question
+Quels traitements d'images ont été appliqués ?
+
+**Top‑K**: 8
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8370 | id=`a82ca2bd-db0f-4fe6-807d-3e74e358f3eb` | len=1531
+  
+> que les images sont devenues plus nettes et moins floues après avoir subi les ajustements sur la netteté.  Analyse du contraste et de la luminosité avant et après retraitement   Les boîtes à moustaches montrent que le retraitement a amélioré la qualité des images en réduisant les valeurs aberrantes. Pour le contraste, la médiane est restée stable, mais les valeurs très faibles …
+
+- **#2** | score=0.8308 | id=`61a5ee6b-58db-4d55-9586-6fb005d63ba1` | len=1787
+  
+> A partir du dataframe initial, on parcourt l’ensemble des images grâce au FilePath pour appliquer nos critères de qualité et créer un dataframe (df_high_quality) réunissant uniquement les images qui passent le test.   Ceux ne passant pas les critères de qualité vont être intégré à un dataframe différent (df_low_quality) pour être traité.  Transformations des données  Traitement…
+
+- **#3** | score=0.8287 | id=`d57195cb-0495-4e57-8b21-d0fb2e3893d8` | len=1316
+  
+> 5. Redimensionnement de l’image La fonction `resize_image(image, width, height)` redimensionne les images à une taille spécifiée (ici, 256x256 pixels). Cette opération est réalisée avec la méthode `resize()` de PIL en utilisant l'algorithme `LANCZOS`, qui permet de préserver la qualité de l'image lors du redimensionnement.  6. Configuration des paramètres globaux Les facteurs d…
+
+- **#4** | score=0.8215 | id=`87b8c08b-a71a-458a-97b7-94f06e94068c` | len=591
+  
+> Elle sera ensuite retraitée (format JPEG, RGB, redimensionnement et éventuellement retraitement du niveau de flou afin de faciliter le diagnostic). Ce premier algorithme de classification, entraîné sur la base totale des images décrite en page 14 et de méta-données pouvant y être rattachées aura été testé sur une base constituée de 20% des images concernées avec un objectif d’a…
+
+- **#5** | score=0.8194 | id=`e6b05cd6-83a1-4ad3-8290-e30e160d373e` | len=1956
+  
+> ● Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) ● Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …) Optimisations architecturales ● Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel ● Attention mechanisms : Intégration de mécanism…
+
+- **#6** | score=0.8162 | id=`db687eaa-20bf-4035-8332-58e2a3edf130` | len=1065
+  
+> • Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines image…
+
+- **#7** | score=0.8157 | id=`1b904edf-2b2c-4ac9-9fd5-25d4dc8789eb` | len=1630
+  
+> Autres ● Incompatibilités techniques : Problèmes de compatibilité entre TensorFlow 2.19 et certains outils d'interprétation (SHAP DeepExplainer, GradCam) ● Migration entre frameworks : Passage de FastAI vers TensorFlow pour faciliter l'intégration Firebase, nécessitant la ré-implémentation de certains modèles Bilan Contribution principale dans l'atteinte des objectifs Notre con…
+
+- **#8** | score=0.8146 | id=`9a407713-6ac7-4838-96ae-cafb35c1ff11` | len=740
+  
+> Dans le dataframe des images de bonnes qualités, il y a 79 599 images, dont les trois premières espèces représentent + 45% du total.  Distribution des espèces dans le dataframe “low quality”      Il y a 47 069 images, on peut remarquer que l’ensemble des images des espèces cassave, riz, et sucre de canne ne sont présentes que sur le dataframe de mauvaise qualité.  Mesure d’amél…
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+que les images sont devenues plus nettes et moins floues après avoir subi les ajustements sur la netteté.  Analyse du contraste et de la luminosité avant et après retraitement 
+ Les boîtes à moustaches montrent que le retraitement a amélioré la qualité des images en réduisant les valeurs aberrantes. Pour le contraste, la médiane est restée stable, mais les valeurs très faibles de contraste ont été corrigées, et la gamme des valeurs s'est élargie. De même, pour la luminosité, la médiane est incha
+
+A partir du dataframe initial, on parcourt l’ensemble des images grâce au FilePath pour appliquer nos critères de qualité et créer un dataframe (df_high_quality) réunissant uniquement les images qui passent le test.   Ceux ne passant pas les critères de qualité vont être intégré à un dataframe différent (df_low_quality) pour être traité.  Transformations des données  Traitement des images Plusieurs traitements sont appliqués aux images dans le but d’améliorer leur qualité. Les traitements inclue
+
+5. Redimensionnement de l’image La fonction `resize_image(image, width, height)` redimensionne les images à une taille spécifiée (ici, 256x256 pixels). Cette opération est réalisée avec la méthode `resize()` de PIL en utilisant l'algorithme `LANCZOS`, qui permet de préserver la qualité de l'image lors du redimensionnement.  6. Configuration des paramètres globaux Les facteurs de traitement sont définis avant le traitement : ● `brightness_factor` : Ajuste la luminosité (ici fixé à 0.8 pour une lé
+
+Elle sera ensuite retraitée (format JPEG, RGB, redimensionnement et éventuellement retraitement du niveau de flou afin de faciliter le diagnostic). Ce premier algorithme de classification, entraîné sur la base totale des images décrite en page 14 et de méta-données pouvant y être rattachées aura été testé sur une base constituée de 20% des images concernées avec un objectif d’accuracy de 95%. La base totale des images aura été probablement corrigée afin de minimiser les déséquilibres entre class
+
+● Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) ● Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …) Optimisations architecturales ● Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel ● Attention mechanisms : Intégration de mécanismes d'attention pour focaliser sur les zones pathologiques ● Architecture adaptative : Modèles capables d'ajuster leur co
+
+• Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines images pré-retraitement (Cassave) ● Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face 
+
+Autres ● Incompatibilités techniques : Problèmes de compatibilité entre TensorFlow 2.19 et certains outils d'interprétation (SHAP DeepExplainer, GradCam) ● Migration entre frameworks : Passage de FastAI vers TensorFlow pour faciliter l'intégration Firebase, nécessitant la ré-implémentation de certains modèles Bilan Contribution principale dans l'atteinte des objectifs Notre contribution principale réside dans le développement d'une pipeline complète de traitement et de classification d'images de
+
+Dans le dataframe des images de bonnes qualités, il y a 79 599 images, dont les trois premières espèces représentent + 45% du total.  Distribution des espèces dans le dataframe “low quality”  
+   Il y a 47 069 images, on peut remarquer que l’ensemble des images des espèces cassave, riz, et sucre de canne ne sont présentes que sur le dataframe de mauvaise qualité.  Mesure d’amélioration de la qualité des images  Distribution du flou avant/après retraitements 
+ D'après la visualisation, la densité
+
+================================================================================
+
+[2025-08-10 21:38:09,047] INFO - 🔍 Re-ranking des 8 chunks pour : « Résume la pipeline d'entraînement »
+### Question
+Résume la pipeline d'entraînement
+
+**Top‑K**: 8
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8311 | id=`6f53dedd-a191-40d4-a87b-65194b26e951` | len=49
+  
+> Comparaison du f1-score par classe et par modèles
+
+- **#2** | score=0.8289 | id=`a2bcbbc5-d151-424c-9c0c-0f01d1ff7f81` | len=1440
+  
+> Optimisation  Nos modèles ont été optimisés en suivant 2 phases.   Phase 1  La première phase a reposé sur :  ● des corrections d’erreur : mesures de précision sur des images test et non les images d’entraînement ; ● des “élagages” rapides de modèles jugés non pertinents ; ● l’utilisation de techniques de fine-tuning : choix des “optimizers”, gel/dégel de couches des modèles po…
+
+- **#3** | score=0.8248 | id=`1b16209e-1da0-46e8-9245-efb5de1eabfb` | len=667
+  
+> ResNet50V2, EfficientNetV2M et Vit16 sous Keras  Pour ces 3 modèles, nous avons suivi le même plan d’entraînement suivant.  Phase d'Entraînement Optimiseur Scheduler de Learning Rate Perte Callbacks Détails supplémentaires Premier Entraînement Adam CosineDecayRestarts en Fine tuning SparseFocalLoss (sans poids) earlystop, time_callback, printLR, model_checkpoint_callback  20 ep…
+
+- **#4** | score=0.8230 | id=`db687eaa-20bf-4035-8332-58e2a3edf130` | len=1065
+  
+> • Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines image…
+
+- **#5** | score=0.8228 | id=`6684463c-bc91-4f8f-aaeb-2aec2c0a70bd` | len=1793
+  
+> Vision Transformer pure ViT16 Très Bon    Conclusion au terme de la Phase 1  Nous tirons de cette première phase deux enseignements: ● La qualité de la précision semble souffrir de la classe Cassave : quel que soit le modèle employé, et malgré les efforts de fine-tuning, il semble qu’une difficulté de reconnaissance subsiste pour cette classe. Cette difficulté est selon intrins…
+
+- **#6** | score=0.8212 | id=`d034ae1f-d754-44d0-8682-69580038ea02` | len=1863
+  
+> Processus de re-labellisation     • Les images du premier décile de score ont été re-labellisées automatiquement.     • Le nouveau label correspond à la classe prédite par le soft voting, considérée comme plus fiable que le label d’origine.     • Les autres images ont conservé leur annotation initiale. Objectifs     • Corriger les labels potentiellement erronés.     • Maintenir…
+
+- **#7** | score=0.8168 | id=`5037052a-cfbf-4a63-a0a7-727ebf799839` | len=1293
+  
+> • Phase d'interprétation des modèles : L'utilisation d'outils comme GradCam et SHAP s'est révélée plus complexe techniquement qu'anticipé, avec des incompatibilités entre certaines architectures (EfficientNetV2M) et les outils d'explicabilité Jeux de données • Redondance non détectée initialement : Découverte tardive que 3 des 4 datasets principaux provenaient de la même source…
+
+- **#8** | score=0.8162 | id=`6ea78435-5b1a-4fab-8f1b-4f98ded83e2a` | len=82
+  
+> Tableau 2 : Performances sur le sous-ensemble Cassava     6. Analyse des résultats
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+Comparaison du f1-score par classe et par modèles
+
+Optimisation  Nos modèles ont été optimisés en suivant 2 phases.   Phase 1  La première phase a reposé sur :  ● des corrections d’erreur : mesures de précision sur des images test et non les images d’entraînement ; ● des “élagages” rapides de modèles jugés non pertinents ; ● l’utilisation de techniques de fine-tuning : choix des “optimizers”, gel/dégel de couches des modèles pour l’apprentissage, technique d’augmentation de data, ajustement des learning rates et introduction de scheduler, modifi
+
+ResNet50V2, EfficientNetV2M et Vit16 sous Keras  Pour ces 3 modèles, nous avons suivi le même plan d’entraînement suivant.  Phase d'Entraînement Optimiseur Scheduler de Learning Rate Perte Callbacks Détails supplémentaires Premier Entraînement Adam CosineDecayRestarts en Fine tuning SparseFocalLoss (sans poids) earlystop, time_callback, printLR, model_checkpoint_callback 
+20 epochs max en transfert learning, 5 epochs max en finetuning avec toutes les couches dégélées Deuxième Entraînement (Améli
+
+• Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines images pré-retraitement (Cassave) ● Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face 
+
+Vision Transformer pure ViT16 Très Bon 
+  Conclusion au terme de la Phase 1  Nous tirons de cette première phase deux enseignements: ● La qualité de la précision semble souffrir de la classe Cassave : quel que soit le modèle employé, et malgré les efforts de fine-tuning, il semble qu’une difficulté de reconnaissance subsiste pour cette classe. Cette difficulté est selon intrinsèquement lié à la qualité des images et aux problèmes apparents de labellisation. Nous nous interrogeons donc sur l’aban
+
+Processus de re-labellisation     • Les images du premier décile de score ont été re-labellisées automatiquement.     • Le nouveau label correspond à la classe prédite par le soft voting, considérée comme plus fiable que le label d’origine.     • Les autres images ont conservé leur annotation initiale. Objectifs     • Corriger les labels potentiellement erronés.     • Maintenir la taille du dataset en remplaçant les étiquettes douteuses.     • Exploiter la confiance collective des modèles pour g
+
+• Phase d'interprétation des modèles : L'utilisation d'outils comme GradCam et SHAP s'est révélée plus complexe techniquement qu'anticipé, avec des incompatibilités entre certaines architectures (EfficientNetV2M) et les outils d'explicabilité Jeux de données • Redondance non détectée initialement : Découverte tardive que 3 des 4 datasets principaux provenaient de la même source originale, réduisant la diversité réelle des données • Déséquilibre sévère : Surreprésentation massive des tomates (13 
+
+Tableau 2 : Performances sur le sous-ensemble Cassava 
+ 
+ 6. Analyse des résultats
+
+================================================================================
+
+[2025-08-10 21:38:14,026] INFO - 🔍 Re-ranking des 8 chunks pour : « Quelles sont les métriques finales ? »
+### Question
+Quelles sont les métriques finales ?
+
+**Top‑K**: 8
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8149 | id=`57311881-65a8-4740-87e5-63f267afdab3` | len=1678
+  
+> Conclusions pré-modélisation   Nous disposons au terme de cette étape d’un fichier homogène en termes de qualité d’images, d’une quantité a priori suffisante pour appliquer un algorithme de reconnaissance, au déséquilibre entre classes moins marqué que sur les données d’origine, et qui affiche déjà quelques variables discriminantes sur l’une des deux variables cibles. Partie 4 …
+
+- **#2** | score=0.8071 | id=`49f2f0f7-0de0-44e1-a75d-e76168da1005` | len=439
+  
+> Métriques secondaires  Loss : Nous avons également jaugé la rapidité de la convergence du modèle en suivant la notion de loss à chaque époque de l’apprentissage.   Selon les modèles et afin de nous assurer, malgré le faible déséquilibre de classes, que les classes les moins représentées soient correctement traitées, nous avons observé dans certains cas quelle était la k-ème Acc…
+
+- **#3** | score=0.8025 | id=`07fe1c8f-5089-4f94-a5c5-eaa2d8ae5a20` | len=1574
+  
+> Les métriques précision, recall et F1-score gagnent environ 1pt pour atteindre 95% et 98% pour respectivement EfficientNetB0 et VGG12. Ce dernier est donc plus performant, ce qui élimine le premier modèle. Bien que dans l’apprentissage de ces deux modèles, les classes “Cassava” aient été exclues, on note des classes de tomates moins bien prédites telles que celles atteintes des…
+
+- **#4** | score=0.7998 | id=`f1a22e98-06ef-4cf2-b379-8699362605a0` | len=2894
+  
+> Métriques de performance utilisées pour comparer les modèles ............................................... 18 Métrique principale ................................................................................................................................ 18 Métriques secondaires ..............................................................................................…
+
+- **#5** | score=0.7986 | id=`619cbc76-7130-411c-9a4c-13f43ddd39d2` | len=962
+  
+> Comparaison des performances des méthodes d’ensemblage  Nous avons exploré deux approches principales pour combiner les modèles : Soft Voting (vote pondéré par les probabilités) : chaque modèle contribue à la prédiction finale via sa distribution de probabilité. Nous avons initialement utilisé une pondération équivalente pour chaque modèle. Une étude systématique des coefficien…
+
+- **#6** | score=0.7984 | id=`2a054425-bc69-4bc3-a7f5-a3dc6dae9a6f` | len=391
+  
+> Les 3 modèles plafonnent à 0.95 après le fine tuning. En effet, les résultats de la classification  des images de l’espèce cassava sont très mauvais sur les trois modèles. Il faudra dans une seconde étape étudier en détail ces images.   Exemple de classification report avec un zoom sur l'espèce cassava.     Graphe comparatif de l’évolutions de la précision et de la perte des tr…
+
+- **#7** | score=0.7976 | id=`ce71ecda-93f4-407f-a7ec-84fe81a92cf8` | len=1201
+  
+> 3- Torch   Description des modèles  2 modèles ont été testés sous Torch :   ● 1 modèle simple avec Transfer Learning, basé sur le modèle pré-entraîné MobileNetV2, dont les couches intermédiaires sont neutralisées et seule la dernière couche est ajustée aux classes à prédire, puis ré-entrainée. Le choix s’est porté sur ce modèle car il est réputé être idéal pour des applications…
+
+- **#8** | score=0.7958 | id=`7428bf68-6c0d-421f-8187-c85908f4a39d` | len=232
+  
+> Deux tableaux sont présentés :     • Le premier montre l’évolution des performances globales.     • Le second est centré sur les performances spécifiques aux classes Cassava.  Tableau 1 : Performances globales (Accuracy et F1-score)
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+Conclusions pré-modélisation   Nous disposons au terme de cette étape d’un fichier homogène en termes de qualité d’images, d’une quantité a priori suffisante pour appliquer un algorithme de reconnaissance, au déséquilibre entre classes moins marqué que sur les données d’origine, et qui affiche déjà quelques variables discriminantes sur l’une des deux variables cibles. Partie 4 : Modélisation  Classification du problème  Type de problème de machine learning  La cible du projet est d’offrir à un i
+
+Métriques secondaires  Loss : Nous avons également jaugé la rapidité de la convergence du modèle en suivant la notion de loss à chaque époque de l’apprentissage.   Selon les modèles et afin de nous assurer, malgré le faible déséquilibre de classes, que les classes les moins représentées soient correctement traitées, nous avons observé dans certains cas quelle était la k-ème Accuracy la plus faible parmi les classes proposées au modèle.
+
+Les métriques précision, recall et F1-score gagnent environ 1pt pour atteindre 95% et 98% pour respectivement EfficientNetB0 et VGG12. Ce dernier est donc plus performant, ce qui élimine le premier modèle. Bien que dans l’apprentissage de ces deux modèles, les classes “Cassava” aient été exclues, on note des classes de tomates moins bien prédites telles que celles atteintes des maladies “Mosaic Virus” et “Spider Mites” (Précision : 73%, Recall : 98%, F1-Score : 84%). On note d’ailleurs qu’à l’oe
+
+Métriques de performance utilisées pour comparer les modèles ............................................... 18 Métrique principale ................................................................................................................................ 18 Métriques secondaires ........................................................................................................................... 18 Choix du modèle et optimisation .......................................................
+
+Comparaison des performances des méthodes d’ensemblage  Nous avons exploré deux approches principales pour combiner les modèles : Soft Voting (vote pondéré par les probabilités) : chaque modèle contribue à la prédiction finale via sa distribution de probabilité. Nous avons initialement utilisé une pondération équivalente pour chaque modèle. Une étude systématique des coefficients de pondération n’a pas mis en évidence de combinaison significativement meilleure que l’équipondération. Cette méthod
+
+Les 3 modèles plafonnent à 0.95 après le fine tuning. En effet, les résultats de la classification  des images de l’espèce cassava sont très mauvais sur les trois modèles. Il faudra dans une seconde étape étudier en détail ces images.   Exemple de classification report avec un zoom sur l'espèce cassava.  
+  Graphe comparatif de l’évolutions de la précision et de la perte des trois modèles
+
+3- Torch   Description des modèles  2 modèles ont été testés sous Torch :   ● 1 modèle simple avec Transfer Learning, basé sur le modèle pré-entraîné MobileNetV2, dont les couches intermédiaires sont neutralisées et seule la dernière couche est ajustée aux classes à prédire, puis ré-entrainée. Le choix s’est porté sur ce modèle car il est réputé être idéal pour des applications embarquées sur mobile, impliquant des contraintes de calcul (puissance limitée du matériel) ou nécessitant un fonctionn
+
+Deux tableaux sont présentés :     • Le premier montre l’évolution des performances globales.     • Le second est centré sur les performances spécifiques aux classes Cassava.  Tableau 1 : Performances globales (Accuracy et F1-score)
+
+================================================================================

@@ -1,0 +1,182 @@
+(llamavenv) rkonan@rkonan-ThinkPad-T460:~/chatbot-project$ python test_preview.py   --vector vectordb/chunks.pkl   --index  vectordb/index.faiss   --k 8   --q "Quels traitements d'images ont été appliqués ?"      "Résume la pipeline d'entraînement"      "Quelles sont les métriques finales ?"
+[2025-08-10 22:01:55,848] INFO - 📦 Initialisation du moteur (hybride, lazy, no-opts)...
+[2025-08-10 22:01:55,849] INFO - ✅ Moteur prêt (FAISS/chunks non chargés).
+[2025-08-10 22:01:55,849] INFO - ⏳ Chargement lazy des données RAG (FAISS + chunks + embeddings)...
+/home/rkonan/chatbot-project/llamavenv/lib/python3.12/site-packages/torch/nn/modules/module.py:1762: FutureWarning: `encoder_attention_mask` is deprecated and will be removed in version 4.55.0 for `XLMRobertaSdpaSelfAttention.forward`.
+  return forward_call(*args, **kwargs)
+[2025-08-10 22:02:50,720] INFO - ✅ RAG chargé en 54.87s (lazy).
+[2025-08-10 22:02:50,821] INFO - 🔍 Re-ranking des 24 chunks pour : « Quels traitements d'images ont été appliqués ? »
+### Question
+Quels traitements d'images ont été appliqués ?
+
+**Top‑K**: 8
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8157 | id=`867088fa-9a44-426f-b62d-753121ec7317` | len=1630
+  
+> Autres ● Incompatibilités techniques : Problèmes de compatibilité entre TensorFlow 2.19 et certains outils d'interprétation (SHAP DeepExplainer, GradCam) ● Migration entre frameworks : Passage de FastAI vers TensorFlow pour faciliter l'intégration Firebase, nécessitant la ré-implémentation de certains modèles Bilan Contribution principale dans l'atteinte des objectifs Notre con…
+
+- **#2** | score=0.8074 | id=`abc9f8c5-2c62-4981-b64e-b61f4ba79252` | len=235
+  
+> D’après nos outils d’interprétation, on remarque que les saillances désignent bien les parties des images importantes pour chacune des classes. Elle reconnaît les contours des plantes et les différences de couleurs issues des maladies.
+
+- **#3** | score=0.8114 | id=`93131da9-50f6-45c7-bb09-e5ce05042c31` | len=1005
+  
+> La photographie retraitée, ou la photographie d’origine subissant de nouveaux filtres, sera soumise à un second algorithme de classification, entraîné sur la base totale des images décrite en page 14 et de méta-données pouvant y être rattachées (telles que le niveau de bleu dans l’image qui est un premier prédicteur du caractère malade ou non de la plante) et testé sur une base…
+
+- **#4** | score=0.8146 | id=`046e3ca7-bc7f-4d0b-937b-3a02b9f01a4b` | len=740
+  
+> Dans le dataframe des images de bonnes qualités, il y a 79 599 images, dont les trois premières espèces représentent + 45% du total.  Distribution des espèces dans le dataframe “low quality”      Il y a 47 069 images, on peut remarquer que l’ensemble des images des espèces cassave, riz, et sucre de canne ne sont présentes que sur le dataframe de mauvaise qualité.  Mesure d’amél…
+
+- **#5** | score=0.8090 | id=`5d134f24-e559-4fb9-a9e0-f1b6eb7903e9` | len=1777
+  
+> Principe     • Les classes minoritaires (Healthy, Bacterial blight, Brown streak disease, Green mottle) ont été massivement augmentées.     • L’objectif était d’atteindre un volume comparable à la classe majoritaire (Cassava Mosaic Disease).     • Les techniques utilisées incluent : rotations, flips, changements de luminosité, contrastes, translations, etc. Objectifs     • Appo…
+
+- **#6** | score=0.8370 | id=`489374cd-b26e-4f44-8db4-340225051898` | len=1531
+  
+> que les images sont devenues plus nettes et moins floues après avoir subi les ajustements sur la netteté.  Analyse du contraste et de la luminosité avant et après retraitement   Les boîtes à moustaches montrent que le retraitement a amélioré la qualité des images en réduisant les valeurs aberrantes. Pour le contraste, la médiane est restée stable, mais les valeurs très faibles …
+
+- **#7** | score=0.8287 | id=`d3072c99-e985-4e32-8638-335a20e96ea3` | len=1316
+  
+> 5. Redimensionnement de l’image La fonction `resize_image(image, width, height)` redimensionne les images à une taille spécifiée (ici, 256x256 pixels). Cette opération est réalisée avec la méthode `resize()` de PIL en utilisant l'algorithme `LANCZOS`, qui permet de préserver la qualité de l'image lors du redimensionnement.  6. Configuration des paramètres globaux Les facteurs d…
+
+- **#8** | score=0.8038 | id=`be532fbd-3fc6-47b9-87f6-32b48aac66d0` | len=1569
+  
+> ● Fichier d’images de feuilles d’arbres fruitiers, de légumineuses et de céréales, malades ou saines ● Dataset d’entraînement de 43.456 images ● Dataset de test de 10.849 images ● Volumétries restreintes aux images d’espèces végétales : 100%  https://www.kaggle.com/abdallahalidev/plantvillage-dataset ● Fichier d’images de feuilles d’arbres fruitiers, de légumineuses et de céréa…
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+Autres ● Incompatibilités techniques : Problèmes de compatibilité entre TensorFlow 2.19 et certains outils d'interprétation (SHAP DeepExplainer, GradCam) ● Migration entre frameworks : Passage de FastAI vers TensorFlow pour faciliter l'intégration Firebase, nécessitant la ré-implémentation de certains modèles Bilan Contribution principale dans l'atteinte des objectifs Notre contribution principale réside dans le développement d'une pipeline complète de traitement et de classification d'images de
+
+D’après nos outils d’interprétation, on remarque que les saillances désignent bien les parties des images importantes pour chacune des classes. Elle reconnaît les contours des plantes et les différences de couleurs issues des maladies.
+
+La photographie retraitée, ou la photographie d’origine subissant de nouveaux filtres, sera soumise à un second algorithme de classification, entraîné sur la base totale des images décrite en page 14 et de méta-données pouvant y être rattachées (telles que le niveau de bleu dans l’image qui est un premier prédicteur du caractère malade ou non de la plante) et testé sur une base constituée de 20% des images concernées avec un objectif d’accuracy de 95% des feuilles malades.  Bâtir une application
+
+Dans le dataframe des images de bonnes qualités, il y a 79 599 images, dont les trois premières espèces représentent + 45% du total.  Distribution des espèces dans le dataframe “low quality”  
+   Il y a 47 069 images, on peut remarquer que l’ensemble des images des espèces cassave, riz, et sucre de canne ne sont présentes que sur le dataframe de mauvaise qualité.  Mesure d’amélioration de la qualité des images  Distribution du flou avant/après retraitements 
+ D'après la visualisation, la densité
+
+Principe     • Les classes minoritaires (Healthy, Bacterial blight, Brown streak disease, Green mottle) ont été massivement augmentées.     • L’objectif était d’atteindre un volume comparable à la classe majoritaire (Cassava Mosaic Disease).     • Les techniques utilisées incluent : rotations, flips, changements de luminosité, contrastes, translations, etc. Objectifs     • Apporter de la diversité visuelle aux classes sous-représentées.     • Réduire le biais induit par la classe majoritaire.   
+
+que les images sont devenues plus nettes et moins floues après avoir subi les ajustements sur la netteté.  Analyse du contraste et de la luminosité avant et après retraitement 
+ Les boîtes à moustaches montrent que le retraitement a amélioré la qualité des images en réduisant les valeurs aberrantes. Pour le contraste, la médiane est restée stable, mais les valeurs très faibles de contraste ont été corrigées, et la gamme des valeurs s'est élargie. De même, pour la luminosité, la médiane est incha
+
+5. Redimensionnement de l’image La fonction `resize_image(image, width, height)` redimensionne les images à une taille spécifiée (ici, 256x256 pixels). Cette opération est réalisée avec la méthode `resize()` de PIL en utilisant l'algorithme `LANCZOS`, qui permet de préserver la qualité de l'image lors du redimensionnement.  6. Configuration des paramètres globaux Les facteurs de traitement sont définis avant le traitement : ● `brightness_factor` : Ajuste la luminosité (ici fixé à 0.8 pour une lé
+
+● Fichier d’images de feuilles d’arbres fruitiers, de légumineuses et de céréales, malades ou saines ● Dataset d’entraînement de 43.456 images ● Dataset de test de 10.849 images ● Volumétries restreintes aux images d’espèces végétales : 100%  https://www.kaggle.com/abdallahalidev/plantvillage-dataset ● Fichier d’images de feuilles d’arbres fruitiers, de légumineuses et de céréales, malades ou saines ● 3 Datasets de 54305 images chacun avec les mêmes images en couleur, niveau de gris et prétraité
+
+================================================================================
+
+[2025-08-10 22:03:31,340] INFO - 🔍 Re-ranking des 24 chunks pour : « Résume la pipeline d'entraînement »
+### Question
+Résume la pipeline d'entraînement
+
+**Top‑K**: 8
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8289 | id=`9713ff1e-78b1-46d5-bd65-f7059f4c5231` | len=1440
+  
+> Optimisation  Nos modèles ont été optimisés en suivant 2 phases.   Phase 1  La première phase a reposé sur :  ● des corrections d’erreur : mesures de précision sur des images test et non les images d’entraînement ; ● des “élagages” rapides de modèles jugés non pertinents ; ● l’utilisation de techniques de fine-tuning : choix des “optimizers”, gel/dégel de couches des modèles po…
+
+- **#2** | score=0.8128 | id=`0995f76b-c954-4aad-b8f1-d0f2d9099856` | len=1956
+  
+> ● Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) ● Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …) Optimisations architecturales ● Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel ● Attention mechanisms : Intégration de mécanism…
+
+- **#3** | score=0.8146 | id=`72b71cc8-1b49-41c4-a07a-02d429ac58d0` | len=1191
+  
+> S’agissant des autres classes, on relève les principaux enseignements suivants: ● Raisins, cerises, agrumes, pommes, pêches, etc. (classes équilibrées) : les trois modèles ont des scores F1 proches de 1.00 sur toutes ces classes : aucune distinction significative. ● Sugarcane (classes mineures) : Bonne performance des trois modèles. EfficientNetV2M excellent suivi de ViT16 ● To…
+
+- **#4** | score=0.8131 | id=`867088fa-9a44-426f-b62d-753121ec7317` | len=1630
+  
+> Autres ● Incompatibilités techniques : Problèmes de compatibilité entre TensorFlow 2.19 et certains outils d'interprétation (SHAP DeepExplainer, GradCam) ● Migration entre frameworks : Passage de FastAI vers TensorFlow pour faciliter l'intégration Firebase, nécessitant la ré-implémentation de certains modèles Bilan Contribution principale dans l'atteinte des objectifs Notre con…
+
+- **#5** | score=0.8079 | id=`b0ad325f-5dce-42e9-8656-275a0e3004cd` | len=1859
+  
+> Choix du modèle et optimisation  Algorithmes testés Nous avons retenu 6 algorithmes : ● 3 algorithmes Keras avec les modèles ResNet50V2, EfficientNetB0 et EfficientNetV2M; ● 1 algorithme FastAI avec le modèle efficientnet_b0 ● 2 algorithmes Torch, l’un avec transfer learning (MobileNetV2, adapté pour une application mobile comme c’est l’objectif ici) et l’autre sans transfer le…
+
+- **#6** | score=0.8080 | id=`ac912d76-42bb-4258-b9c5-cc5c615c52ff` | len=896
+  
+> Niveaux d’expertise  Niveaux d’expertise interne  Nom Algorithmie Dév. Appli mobile Statistiques Gestion projet Botanique  Ela CIMEN 2/5 0/5 3/5 4/5 3/5 Roland KONAN 4/5 2/5 3/5 4/5 2/5 Yacine MADI SAID 3/5 5/5 2/5 4/5 1/5 Nicolas RINCÉ 2/5 0/5 4/5 4/5 1/5  Recours à expertise externe  Nous n’avons pas eu recours à des experts externes à proprement parler (en-dehors de Damien é…
+
+- **#7** | score=0.8097 | id=`3d173df0-266c-4374-a322-403282b97f75` | len=1574
+  
+> Les métriques précision, recall et F1-score gagnent environ 1pt pour atteindre 95% et 98% pour respectivement EfficientNetB0 et VGG12. Ce dernier est donc plus performant, ce qui élimine le premier modèle. Bien que dans l’apprentissage de ces deux modèles, les classes “Cassava” aient été exclues, on note des classes de tomates moins bien prédites telles que celles atteintes des…
+
+- **#8** | score=0.8157 | id=`0852c901-df96-450b-b583-1532c8b3e4bc` | len=1449
+  
+> Troisième Entraînement (Amélioration 2) AdamW CosineDecayRestarts SparseFocalLoss (avec poids des classes) earlystop, time_callback, printLR, model_checkpoint_callback  20 epochs max de finetuning Augmentation manuelle des images des classes minoritaires sur Cassava + augmentation ciblée sur ces classes  La troisième étape s’est avérée la plus significative en matière de gain d…
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+Optimisation  Nos modèles ont été optimisés en suivant 2 phases.   Phase 1  La première phase a reposé sur :  ● des corrections d’erreur : mesures de précision sur des images test et non les images d’entraînement ; ● des “élagages” rapides de modèles jugés non pertinents ; ● l’utilisation de techniques de fine-tuning : choix des “optimizers”, gel/dégel de couches des modèles pour l’apprentissage, technique d’augmentation de data, ajustement des learning rates et introduction de scheduler, modifi
+
+● Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) ● Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …) Optimisations architecturales ● Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel ● Attention mechanisms : Intégration de mécanismes d'attention pour focaliser sur les zones pathologiques ● Architecture adaptative : Modèles capables d'ajuster leur co
+
+S’agissant des autres classes, on relève les principaux enseignements suivants: ● Raisins, cerises, agrumes, pommes, pêches, etc. (classes équilibrées) : les trois modèles ont des scores F1 proches de 1.00 sur toutes ces classes : aucune distinction significative. ● Sugarcane (classes mineures) : Bonne performance des trois modèles. EfficientNetV2M excellent suivi de ViT16 ● Tomato (13 sous-classes, très représenté mais varié) : Bonne performance des trois modèles. EfficientNetV2M excellent suiv
+
+Autres ● Incompatibilités techniques : Problèmes de compatibilité entre TensorFlow 2.19 et certains outils d'interprétation (SHAP DeepExplainer, GradCam) ● Migration entre frameworks : Passage de FastAI vers TensorFlow pour faciliter l'intégration Firebase, nécessitant la ré-implémentation de certains modèles Bilan Contribution principale dans l'atteinte des objectifs Notre contribution principale réside dans le développement d'une pipeline complète de traitement et de classification d'images de
+
+Choix du modèle et optimisation  Algorithmes testés Nous avons retenu 6 algorithmes : ● 3 algorithmes Keras avec les modèles ResNet50V2, EfficientNetB0 et EfficientNetV2M; ● 1 algorithme FastAI avec le modèle efficientnet_b0 ● 2 algorithmes Torch, l’un avec transfer learning (MobileNetV2, adapté pour une application mobile comme c’est l’objectif ici) et l’autre sans transfer learning ● 1 algorithme AlexNet  Résultats par modèle  1- KERAS  Keras est une bibliothèque open-source de haut niveau pou
+
+Niveaux d’expertise  Niveaux d’expertise interne  Nom Algorithmie Dév. Appli mobile Statistiques Gestion projet Botanique 
+Ela CIMEN 2/5 0/5 3/5 4/5 3/5 Roland KONAN 4/5 2/5 3/5 4/5 2/5 Yacine MADI SAID 3/5 5/5 2/5 4/5 1/5 Nicolas RINCÉ 2/5 0/5 4/5 4/5 1/5  Recours à expertise externe  Nous n’avons pas eu recours à des experts externes à proprement parler (en-dehors de Damien évidemment !) mais avons réalisé de nombreuses recherches afin de nous guider, notamment sur les sujets suivants : ● Tail
+
+Les métriques précision, recall et F1-score gagnent environ 1pt pour atteindre 95% et 98% pour respectivement EfficientNetB0 et VGG12. Ce dernier est donc plus performant, ce qui élimine le premier modèle. Bien que dans l’apprentissage de ces deux modèles, les classes “Cassava” aient été exclues, on note des classes de tomates moins bien prédites telles que celles atteintes des maladies “Mosaic Virus” et “Spider Mites” (Précision : 73%, Recall : 98%, F1-Score : 84%). On note d’ailleurs qu’à l’oe
+
+Troisième Entraînement (Amélioration 2) AdamW CosineDecayRestarts SparseFocalLoss (avec poids des classes) earlystop, time_callback, printLR, model_checkpoint_callback 
+20 epochs max de finetuning Augmentation manuelle des images des classes minoritaires sur Cassava + augmentation ciblée sur ces classes  La troisième étape s’est avérée la plus significative en matière de gain de performance, avec un traitement spécifique apportée à la classe “Cassava”  en augmentant manuellement les images des c
+
+================================================================================
+
+[2025-08-10 22:04:21,293] INFO - 🔍 Re-ranking des 24 chunks pour : « Quelles sont les métriques finales ? »
+### Question
+Quelles sont les métriques finales ?
+
+**Top‑K**: 6
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8149 | id=`e0b6462a-689d-4b99-b578-cfa902e77c2d` | len=1678
+  
+> Conclusions pré-modélisation   Nous disposons au terme de cette étape d’un fichier homogène en termes de qualité d’images, d’une quantité a priori suffisante pour appliquer un algorithme de reconnaissance, au déséquilibre entre classes moins marqué que sur les données d’origine, et qui affiche déjà quelques variables discriminantes sur l’une des deux variables cibles. Partie 4 …
+
+- **#2** | score=0.8071 | id=`2c2f34d4-b9ea-4151-9068-cee564e32ed4` | len=439
+  
+> Métriques secondaires  Loss : Nous avons également jaugé la rapidité de la convergence du modèle en suivant la notion de loss à chaque époque de l’apprentissage.   Selon les modèles et afin de nous assurer, malgré le faible déséquilibre de classes, que les classes les moins représentées soient correctement traitées, nous avons observé dans certains cas quelle était la k-ème Acc…
+
+- **#3** | score=0.8025 | id=`3d173df0-266c-4374-a322-403282b97f75` | len=1574
+  
+> Les métriques précision, recall et F1-score gagnent environ 1pt pour atteindre 95% et 98% pour respectivement EfficientNetB0 et VGG12. Ce dernier est donc plus performant, ce qui élimine le premier modèle. Bien que dans l’apprentissage de ces deux modèles, les classes “Cassava” aient été exclues, on note des classes de tomates moins bien prédites telles que celles atteintes des…
+
+- **#4** | score=0.7998 | id=`912e7e83-d138-47d1-bced-fbe5860450cc` | len=2894
+  
+> Métriques de performance utilisées pour comparer les modèles ............................................... 18 Métrique principale ................................................................................................................................ 18 Métriques secondaires ..............................................................................................…
+
+- **#5** | score=0.7906 | id=`94d21018-bb40-43f2-94a7-4445fcd02dfc` | len=1955
+  
+> AlexNet est intéressant pour la classification d'images car il a introduit une architecture de réseau de neurones convolutifs profonds, utilisant des couches convolutives et des unités de rectification linéaire (ReLU), qui a significativement amélioré la précision de la reconnaissance d'images sur des jeux de données complexes comme ImageNet. Le modèle a été initialisé en suiva…
+
+- **#6** | score=0.7854 | id=`2e3849da-708d-40ed-a310-d537547ddeff` | len=1065
+  
+> • Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines image…
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+Conclusions pré-modélisation   Nous disposons au terme de cette étape d’un fichier homogène en termes de qualité d’images, d’une quantité a priori suffisante pour appliquer un algorithme de reconnaissance, au déséquilibre entre classes moins marqué que sur les données d’origine, et qui affiche déjà quelques variables discriminantes sur l’une des deux variables cibles. Partie 4 : Modélisation  Classification du problème  Type de problème de machine learning  La cible du projet est d’offrir à un i
+
+Métriques secondaires  Loss : Nous avons également jaugé la rapidité de la convergence du modèle en suivant la notion de loss à chaque époque de l’apprentissage.   Selon les modèles et afin de nous assurer, malgré le faible déséquilibre de classes, que les classes les moins représentées soient correctement traitées, nous avons observé dans certains cas quelle était la k-ème Accuracy la plus faible parmi les classes proposées au modèle.
+
+Les métriques précision, recall et F1-score gagnent environ 1pt pour atteindre 95% et 98% pour respectivement EfficientNetB0 et VGG12. Ce dernier est donc plus performant, ce qui élimine le premier modèle. Bien que dans l’apprentissage de ces deux modèles, les classes “Cassava” aient été exclues, on note des classes de tomates moins bien prédites telles que celles atteintes des maladies “Mosaic Virus” et “Spider Mites” (Précision : 73%, Recall : 98%, F1-Score : 84%). On note d’ailleurs qu’à l’oe
+
+Métriques de performance utilisées pour comparer les modèles ............................................... 18 Métrique principale ................................................................................................................................ 18 Métriques secondaires ........................................................................................................................... 18 Choix du modèle et optimisation .......................................................
+
+AlexNet est intéressant pour la classification d'images car il a introduit une architecture de réseau de neurones convolutifs profonds, utilisant des couches convolutives et des unités de rectification linéaire (ReLU), qui a significativement amélioré la précision de la reconnaissance d'images sur des jeux de données complexes comme ImageNet. Le modèle a été initialisé en suivant l’architecture suivante :  ● Couches convolutives et pooling : L'architecture commence par deux couches convolutives 
+
+• Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines images pré-retraitement (Cassave) ● Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face 
+
+================================================================================

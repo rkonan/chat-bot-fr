@@ -1,0 +1,130 @@
+### Question
+Quels traitements d'images ont été appliqués ?
+
+**Top‑K**: 8
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8157 | id=`5cfd843b-793e-410e-8320-f43342316a90` | len=1630
+  
+> Autres ● Incompatibilités techniques : Problèmes de compatibilité entre TensorFlow 2.19 et certains outils d'interprétation (SHAP DeepExplainer, GradCam) ● Migration entre frameworks : Passage de FastAI vers TensorFlow pour faciliter l'intégration Firebase, nécessitant la ré-implémentation de certains modèles Bilan Contribution principale dans l'atteinte des objectifs Notre con…
+
+- **#2** | score=0.8146 | id=`a4f92528-5418-45a9-a840-5217bb405eec` | len=740
+  
+> Dans le dataframe des images de bonnes qualités, il y a 79 599 images, dont les trois premières espèces représentent + 45% du total.  Distribution des espèces dans le dataframe “low quality”      Il y a 47 069 images, on peut remarquer que l’ensemble des images des espèces cassave, riz, et sucre de canne ne sont présentes que sur le dataframe de mauvaise qualité.  Mesure d’amél…
+
+- **#3** | score=0.8370 | id=`e1b43b2b-1b35-4ba6-ac74-4c6875bd8190` | len=1531
+  
+> que les images sont devenues plus nettes et moins floues après avoir subi les ajustements sur la netteté.  Analyse du contraste et de la luminosité avant et après retraitement   Les boîtes à moustaches montrent que le retraitement a amélioré la qualité des images en réduisant les valeurs aberrantes. Pour le contraste, la médiane est restée stable, mais les valeurs très faibles …
+
+- **#4** | score=0.8308 | id=`ad89cb8f-62e5-47a3-bba7-38b847fff5c3` | len=1787
+  
+> A partir du dataframe initial, on parcourt l’ensemble des images grâce au FilePath pour appliquer nos critères de qualité et créer un dataframe (df_high_quality) réunissant uniquement les images qui passent le test.   Ceux ne passant pas les critères de qualité vont être intégré à un dataframe différent (df_low_quality) pour être traité.  Transformations des données  Traitement…
+
+- **#5** | score=0.8215 | id=`d35af72f-6bf4-4991-911f-528c81941bf0` | len=591
+  
+> Elle sera ensuite retraitée (format JPEG, RGB, redimensionnement et éventuellement retraitement du niveau de flou afin de faciliter le diagnostic). Ce premier algorithme de classification, entraîné sur la base totale des images décrite en page 14 et de méta-données pouvant y être rattachées aura été testé sur une base constituée de 20% des images concernées avec un objectif d’a…
+
+- **#6** | score=0.8136 | id=`5973f1ca-7fd5-4f81-99b3-3d0d7087f3bf` | len=733
+  
+> Cette difficulté reflète un défi majeur en reconnaissance d'images agricoles : distinguer les symptômes subtils de maladies sur des images prises dans des conditions naturelles variables, avec des arrière-plans complexes et des variations d'éclairage. Difficultés détaillées par catégorie Prévisionnel • Temps de préprocessing sous-estimé : Le nettoyage et l'homogénéisation des m…
+
+- **#7** | score=0.8194 | id=`8d9aba35-9f7c-4499-ab1b-36eb07c8a3bc` | len=1956
+  
+> ● Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) ● Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …) Optimisations architecturales ● Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel ● Attention mechanisms : Intégration de mécanism…
+
+- **#8** | score=0.8162 | id=`06e8e6f5-fb8d-440e-bde8-7fa6d3d96e7b` | len=1065
+  
+> • Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines image…
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+Autres ● Incompatibilités techniques : Problèmes de compatibilité entre TensorFlow 2.19 et certains outils d'interprétation (SHAP DeepExplainer, GradCam) ● Migration entre frameworks : Passage de FastAI vers TensorFlow pour faciliter l'intégration Firebase, nécessitant la ré-implémentation de certains modèles Bilan Contribution principale dans l'atteinte des objectifs Notre contribution principale réside dans le développement d'une pipeline complète de traitement et de classification d'images de
+
+Dans le dataframe des images de bonnes qualités, il y a 79 599 images, dont les trois premières espèces représentent + 45% du total.  Distribution des espèces dans le dataframe “low quality”  
+   Il y a 47 069 images, on peut remarquer que l’ensemble des images des espèces cassave, riz, et sucre de canne ne sont présentes que sur le dataframe de mauvaise qualité.  Mesure d’amélioration de la qualité des images  Distribution du flou avant/après retraitements 
+ D'après la visualisation, la densité
+
+que les images sont devenues plus nettes et moins floues après avoir subi les ajustements sur la netteté.  Analyse du contraste et de la luminosité avant et après retraitement 
+ Les boîtes à moustaches montrent que le retraitement a amélioré la qualité des images en réduisant les valeurs aberrantes. Pour le contraste, la médiane est restée stable, mais les valeurs très faibles de contraste ont été corrigées, et la gamme des valeurs s'est élargie. De même, pour la luminosité, la médiane est incha
+
+A partir du dataframe initial, on parcourt l’ensemble des images grâce au FilePath pour appliquer nos critères de qualité et créer un dataframe (df_high_quality) réunissant uniquement les images qui passent le test.   Ceux ne passant pas les critères de qualité vont être intégré à un dataframe différent (df_low_quality) pour être traité.  Transformations des données  Traitement des images Plusieurs traitements sont appliqués aux images dans le but d’améliorer leur qualité. Les traitements inclue
+
+Elle sera ensuite retraitée (format JPEG, RGB, redimensionnement et éventuellement retraitement du niveau de flou afin de faciliter le diagnostic). Ce premier algorithme de classification, entraîné sur la base totale des images décrite en page 14 et de méta-données pouvant y être rattachées aura été testé sur une base constituée de 20% des images concernées avec un objectif d’accuracy de 95%. La base totale des images aura été probablement corrigée afin de minimiser les déséquilibres entre class
+
+Cette difficulté reflète un défi majeur en reconnaissance d'images agricoles : distinguer les symptômes subtils de maladies sur des images prises dans des conditions naturelles variables, avec des arrière-plans complexes et des variations d'éclairage. Difficultés détaillées par catégorie Prévisionnel • Temps de préprocessing sous-estimé : Le nettoyage et l'homogénéisation des multiples datasets (fusion de bases redondantes, correction des déséquilibres entre classes) ont nécessité significativem
+
+● Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) ● Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …) Optimisations architecturales ● Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel ● Attention mechanisms : Intégration de mécanismes d'attention pour focaliser sur les zones pathologiques ● Architecture adaptative : Modèles capables d'ajuster leur co
+
+• Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines images pré-retraitement (Cassave) ● Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face 
+
+================================================================================
+
+[2025-08-10 22:11:31,378] INFO - 🔍 Re-ranking des 24 chunks pour : « Résume la pipeline d'entraînement »
+### Question
+Résume la pipeline d'entraînement
+
+**Top‑K**: 6
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8289 | id=`21ed7d65-1921-48ed-aef7-cbf9f2dc008b` | len=1440
+  
+> Optimisation  Nos modèles ont été optimisés en suivant 2 phases.   Phase 1  La première phase a reposé sur :  ● des corrections d’erreur : mesures de précision sur des images test et non les images d’entraînement ; ● des “élagages” rapides de modèles jugés non pertinents ; ● l’utilisation de techniques de fine-tuning : choix des “optimizers”, gel/dégel de couches des modèles po…
+
+- **#2** | score=0.8248 | id=`4d1e3223-2113-4440-921a-71e343a99aec` | len=667
+  
+> ResNet50V2, EfficientNetV2M et Vit16 sous Keras  Pour ces 3 modèles, nous avons suivi le même plan d’entraînement suivant.  Phase d'Entraînement Optimiseur Scheduler de Learning Rate Perte Callbacks Détails supplémentaires Premier Entraînement Adam CosineDecayRestarts en Fine tuning SparseFocalLoss (sans poids) earlystop, time_callback, printLR, model_checkpoint_callback  20 ep…
+
+- **#3** | score=0.8230 | id=`06e8e6f5-fb8d-440e-bde8-7fa6d3d96e7b` | len=1065
+  
+> • Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines image…
+
+- **#4** | score=0.8228 | id=`d6a140cb-6f18-4419-a78d-ffea9910ba24` | len=1793
+  
+> Vision Transformer pure ViT16 Très Bon    Conclusion au terme de la Phase 1  Nous tirons de cette première phase deux enseignements: ● La qualité de la précision semble souffrir de la classe Cassave : quel que soit le modèle employé, et malgré les efforts de fine-tuning, il semble qu’une difficulté de reconnaissance subsiste pour cette classe. Cette difficulté est selon intrins…
+
+- **#5** | score=0.8128 | id=`8d9aba35-9f7c-4499-ab1b-36eb07c8a3bc` | len=1956
+  
+> ● Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) ● Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …) Optimisations architecturales ● Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel ● Attention mechanisms : Intégration de mécanism…
+
+- **#6** | score=0.8124 | id=`c757287b-8917-4635-b64d-32df6dd63755` | len=1660
+  
+> supérieure.  ● Profundité : Moins profond que ResNet50V2, mais beaucoup plus efficace pour les mêmes performances.  ● Performance : Généralement plus rapide et plus efficace que ResNet50V2 pour la même précision.  ● Avantages : Très efficace en termes de taille du modèle et d'utilisation des ressources, il donne de bons résultats même avec des réseaux moins profonds.  ● Inconvé…
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+Optimisation  Nos modèles ont été optimisés en suivant 2 phases.   Phase 1  La première phase a reposé sur :  ● des corrections d’erreur : mesures de précision sur des images test et non les images d’entraînement ; ● des “élagages” rapides de modèles jugés non pertinents ; ● l’utilisation de techniques de fine-tuning : choix des “optimizers”, gel/dégel de couches des modèles pour l’apprentissage, technique d’augmentation de data, ajustement des learning rates et introduction de scheduler, modifi
+
+ResNet50V2, EfficientNetV2M et Vit16 sous Keras  Pour ces 3 modèles, nous avons suivi le même plan d’entraînement suivant.  Phase d'Entraînement Optimiseur Scheduler de Learning Rate Perte Callbacks Détails supplémentaires Premier Entraînement Adam CosineDecayRestarts en Fine tuning SparseFocalLoss (sans poids) earlystop, time_callback, printLR, model_checkpoint_callback 
+20 epochs max en transfert learning, 5 epochs max en finetuning avec toutes les couches dégélées Deuxième Entraînement (Améli
+
+• Optimisation pour le déploiement mobile : Apprentissage des techniques de compression et quantification de modèles pour l'usage sur smartphone Pertinence ● Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l’utilisation de certaines images pré-retraitement (Cassave) ● Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face 
+
+Vision Transformer pure ViT16 Très Bon 
+  Conclusion au terme de la Phase 1  Nous tirons de cette première phase deux enseignements: ● La qualité de la précision semble souffrir de la classe Cassave : quel que soit le modèle employé, et malgré les efforts de fine-tuning, il semble qu’une difficulté de reconnaissance subsiste pour cette classe. Cette difficulté est selon intrinsèquement lié à la qualité des images et aux problèmes apparents de labellisation. Nous nous interrogeons donc sur l’aban
+
+● Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) ● Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …) Optimisations architecturales ● Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel ● Attention mechanisms : Intégration de mécanismes d'attention pour focaliser sur les zones pathologiques ● Architecture adaptative : Modèles capables d'ajuster leur co
+
+supérieure.  ● Profundité : Moins profond que ResNet50V2, mais beaucoup plus efficace pour les mêmes performances.  ● Performance : Généralement plus rapide et plus efficace que ResNet50V2 pour la même précision.  ● Avantages : Très efficace en termes de taille du modèle et d'utilisation des ressources, il donne de bons résultats même avec des réseaux moins profonds.  ● Inconvénients : Moins éprouvé que ResNet50V2 dans certaines configurations.  EfficientNetV2M :  ● Architecture : Une améliorati
+
+================================================================================
+
+[2025-08-10 22:12:17,915] INFO - 🔍 Re-ranking des 24 chunks pour : « Quelles sont les métriques finales ? »
+### Question
+Quelles sont les métriques finales ?
+
+**Top‑K**: 1
+
+### Top K chunks (rerank cos_sim)
+- **#1** | score=0.8149 | id=`74a8d50d-c7b8-4978-88a0-ac51ec693c19` | len=1678
+  
+> Conclusions pré-modélisation   Nous disposons au terme de cette étape d’un fichier homogène en termes de qualité d’images, d’une quantité a priori suffisante pour appliquer un algorithme de reconnaissance, au déséquilibre entre classes moins marqué que sur les données d’origine, et qui affiche déjà quelques variables discriminantes sur l’une des deux variables cibles. Partie 4 …
+
+
+---
+### Contexte concaténé (troncature éventuelle)
+
+Conclusions pré-modélisation   Nous disposons au terme de cette étape d’un fichier homogène en termes de qualité d’images, d’une quantité a priori suffisante pour appliquer un algorithme de reconnaissance, au déséquilibre entre classes moins marqué que sur les données d’origine, et qui affiche déjà quelques variables discriminantes sur l’une des deux variables cibles. Partie 4 : Modélisation  Classification du problème  Type de problème de machine learning  La cible du projet est d’offrir à un i

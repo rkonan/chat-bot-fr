@@ -1,0 +1,22 @@
+# 1 run par modèle (rapide)
+python benchmark_rewriters.py "Quel modèle est le meilleur modèle etudié ?"
+
+# 3 runs par modèle + export JSON/CSV
+python benchmark_rewriters.py "Quel modèle est le meilleur modèle etudié ?" \
+  --runs 3 --json bench.json --csv bench.csv
+
+# Spécifier exactement TES tags Ollama
+python benchmark_rewriters.py "Quel modèle est le meilleur modèle etudié ?" \
+  --models phi3:mini phi3:3.8b-q4_0 qwen2:1.5b-instruct gemma2:2b stablelm2:1.6b
+
+
+python benchmark_rewriters_logged_plus.py \
+  --questions-from-doc DST_Rapport_final_Reco_plant.pdf \
+  --max-questions 20 \
+  --models phi3:mini qwen2:1.5b-instruct gemma2:2b \
+  --runs 2 \
+  --json bench_multi.json \
+  --csv bench_multi.csv \
+  --verbose
+
+  python benchmark_rewriters_logged_plus.py  --runs 3 --json bench_multi.json --csv bench_multi.csv --verbose
