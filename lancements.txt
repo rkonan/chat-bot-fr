@@ -19,4 +19,45 @@ python benchmark_rewriters_logged_plus.py \
   --csv bench_multi.csv \
   --verbose
 
-  python benchmark_rewriters_logged_plus.py  --runs 3 --json bench_multi.json --csv bench_multi.csv --verbose
+  python benchmark_rewriters_logged_plus.py  --questions-from-doc DST_Rapport_final_Reco_plant.pdf --runs 3 --json bench_multi.json --csv bench_multi.csv --verbose
+
+python rag_engine_hybrid_v1_dropin_cli.py \
+  --vector_path chatbot-models/vectordb_docling/chunks.pkl \
+  --index_path  chatbot-models/vectordb_docling/index.faiss \
+  --embed_model intfloat/multilingual-e5-base \
+  --model_name "qwen2.5:3b" \
+  --ollama_host http://localhost:11434 \
+  --questions_file questions_auto.txt \
+  --output runs/batch_auto.jsonl \
+  --top_k 8
+
+
+  python rag_cli_batch.py \
+  --vector_path chatbot-models/vectordb_docling/chunks.pkl \
+  --index_path  chatbot-models/vectordb_docling/index.faiss \
+  --embed_model intfloat/multilingual-e5-base \
+  --questions_file questions_auto.txt \
+  --output runs/batch_auto_ctx.jsonl \
+  --top_k 8 \
+  --no_generate
+
+
+python rag_cli_batch.py \
+  --vector_path chatbot-models/vectordb_docling/chunks.pkl \
+  --index_path  chatbot-models/vectordb_docling/index.faiss \
+  --embed_model intfloat/multilingual-e5-base \
+  --model_name "qwen2.5:3b" \
+  --ollama_host http://localhost:11434 \
+  --ollama_timeout 600 \
+  --questions_file questions_auto.txt \
+  --output runs/batch_auto.jsonl \
+  --top_k 8
+
+python rag_cli_batch.py \
+  --vector_path chatbot-models/vectordb_docling/chunks.pkl \
+  --index_path  chatbot-models/vectordb_docling/index.faiss \
+  --embed_model intfloat/multilingual-e5-base \
+  --model_name "qwen2.5:3b" \
+  --ollama_host http://localhost:11434 \
+  --preview "Quelles métriques principales et secondaires ont été utilisées ?" \
+  --top_k 8

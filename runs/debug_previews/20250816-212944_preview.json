@@ -1,0 +1,64 @@
+{
+  "question": "Pourquoi le stacking n'a-t-il pas surpassé le soft voting ?",
+  "mode_decision": "rag",
+  "top_k_effectif": 8,
+  "context": "Les performances obtenues avec le stacking n'ont pas surpassé celles du soft voting.En raison de la complexité de mise en œuvre et de l'absence de gain notable, nous avons décidé d'abandonner cette méthode au profit de l'agrégation simple.\n\nNous avons exploré deux approches principales pour combiner les modèles : Soft Voting (vote pondéré par les probabilités) : chaque modèle contribue à la prédiction finale via sa distribution de probabilité. Nous avons initialement utilisé une pondération équivalente pour chaque modèle. Une étude systématique des coefficients de pondération n'a pas mis en évidence de combinaison significativement meilleure que l'équipondération. Cette méthode s'est avérée simple, stable, et a permis d'obtenir des\n\nEfficientNetV2M reste central dans tous les meilleurs ensembles : c'est le modèle le plus constant et performant, en global comme sur Cassava. ResNet50V2, bien que moins performant seul, apporte une complémentarité utile en ensemble, notamment sur les classes Cassava. Le stacking n'a pas permis d'amélioration notable par rapport au soft voting, tout en nécessitant une mise en œuvre plus complexe. Il a donc été écarté dans les configurations finales. En tenant compte des contraintes pratiques de \n\nGlobalement, l'ensemble EfficientNetV2M + ResNet50V2 + SwinTransformer atteint les meilleures performances (accuracy = 0.9865, F1-score = 0.9856), surpassant tous les modèles individuels. Cela justifie pleinement l'intérêt du soft voting entre modèles complémentaires. Pour les classes Cassava uniquement, l'ensemble EfficientNetV2M + ResNet50V2 se démarque légèrement, avec un F1-score de 0.8674. Il est suivi de très près par l'ensemble intégrant SwinTransformer (0.8658), puis par EfficientNetV2M \n\n- Les images du premier décile de score ont été re-labellisées automatiquement. - Le nouveau label correspond à la classe prédite par le soft voting, considérée comme plus fiable que le label d'origine. - Les autres images ont conservé leur annotation initiale. Objectifs - Corriger les labels potentiellement erronés. - Maintenir la taille du dataset en remplaçant les étiquettes douteuses. - Exploiter la confiance collective des modèles pour guider la correction.\n\n- Organisation du code pour améliorer le temps d'apprentissage - Augmentation de la data sur le modèle - Ajouts des poids sur les classes pour lutter contre le déséquilibre - Gel/Dégel du modèle de base - Shuffle passé à False dans le dataset de test Les métriques précision, recall et F1-score gagnent environ 1pt pour atteindre 95% et 98% pour respectivement EfficientNetB0 et VGG12. Ce dernier est donc plus performant, ce qui élimine le premier modèle. Bien que dans l'apprentissage de ces deux m\n\n- ∞ Temps de préprocessing sous-estimé : Le nettoyage et l'homogénéisation des multiples datasets (fusion de bases redondantes, correction des déséquilibres entre classes) ont nécessité significativement plus de temps que prévu - ∞ Complexité du fine-tuning : Les itérations successives d'optimisation des modèles, particulièrement pour traiter les classes minoritaires comme la Cassave, ont multiplié les cycles de développement par 3 - ∞ Phase d'interprétation des modèles : L'utilisation d'outils \n\nLe score est défini comme une combinaison pondérée de trois composantes : - Précision locale du soft voting : probabilité que le soft voting des modèles prédit correctement cette image sur le dataset d'entraînement. - Confiance du soft voting : probabilité moyenne attribuée à la classe majoritaire par le soft voting. - Accord inter-modèles : mesuré par la divergence de Kullback-Leibler (KL) entre les distributions de sortie des différents modèles (plus la divergence est faible, plus les modèles ",
+  "items": [
+    {
+      "rank": 1,
+      "score": 0.8964031934738159,
+      "node_id": "beb33110-be6f-4996-8079-2ba53934ea1f",
+      "snippet": "Les performances obtenues avec le stacking n'ont pas surpassé celles du soft voting.En raison de la complexité de mise en œuvre et de l'absence de gain notable, nous avons décidé d'abandonner cette méthode au profit de l'agrégation simple.",
+      "full_len": 239
+    },
+    {
+      "rank": 2,
+      "score": 0.8621415495872498,
+      "node_id": "8f39f08d-5bec-46c9-92d2-7e6360add4d8",
+      "snippet": "Nous avons exploré deux approches principales pour combiner les modèles : Soft Voting (vote pondéré par les probabilités) : chaque modèle contribue à la prédiction finale via sa distribution de probabilité. Nous avons initialement utilisé une pondération équivalente pour chaque modèle. Une étude systématique des coefficients de pondération n'a pas mis en évidence de combinaison significativement m",
+      "full_len": 637
+    },
+    {
+      "rank": 3,
+      "score": 0.8464056253433228,
+      "node_id": "3bb20daf-9d92-460f-9b00-02b38bc1605e",
+      "snippet": "EfficientNetV2M reste central dans tous les meilleurs ensembles : c'est le modèle le plus constant et performant, en global comme sur Cassava. ResNet50V2, bien que moins performant seul, apporte une complémentarité utile en ensemble, notamment sur les classes Cassava. Le stacking n'a pas permis d'amélioration notable par rapport au soft voting, tout en nécessitant une mise en œuvre plus complexe. ",
+      "full_len": 688
+    },
+    {
+      "rank": 4,
+      "score": 0.8209644556045532,
+      "node_id": "a1bdf999-47fa-41a3-b8bb-c2b64c2768f9",
+      "snippet": "Globalement, l'ensemble EfficientNetV2M + ResNet50V2 + SwinTransformer atteint les meilleures performances (accuracy = 0.9865, F1-score = 0.9856), surpassant tous les modèles individuels. Cela justifie pleinement l'intérêt du soft voting entre modèles complémentaires. Pour les classes Cassava uniquement, l'ensemble EfficientNetV2M + ResNet50V2 se démarque légèrement, avec un F1-score de 0.8674. Il",
+      "full_len": 660
+    },
+    {
+      "rank": 5,
+      "score": 0.8194819688796997,
+      "node_id": "0b77bb09-d4eb-4ede-b164-65f4b3b7be0d",
+      "snippet": "- Les images du premier décile de score ont été re-labellisées automatiquement. - Le nouveau label correspond à la classe prédite par le soft voting, considérée comme plus fiable que le label d'origine. - Les autres images ont conservé leur annotation initiale. Objectifs - Corriger les labels potentiellement erronés. - Maintenir la taille du dataset en remplaçant les étiquettes douteuses. - Exploi",
+      "full_len": 466
+    },
+    {
+      "rank": 6,
+      "score": 0.8189253211021423,
+      "node_id": "ecde88f3-3a78-4dd4-9f5a-067580192b32",
+      "snippet": "- Organisation du code pour améliorer le temps d'apprentissage - Augmentation de la data sur le modèle - Ajouts des poids sur les classes pour lutter contre le déséquilibre - Gel/Dégel du modèle de base - Shuffle passé à False dans le dataset de test Les métriques précision, recall et F1-score gagnent environ 1pt pour atteindre 95% et 98% pour respectivement EfficientNetB0 et VGG12. Ce dernier est",
+      "full_len": 843
+    },
+    {
+      "rank": 7,
+      "score": 0.8168262839317322,
+      "node_id": "90781c83-7b22-4367-8531-123e3931b996",
+      "snippet": "- ∞ Temps de préprocessing sous-estimé : Le nettoyage et l'homogénéisation des multiples datasets (fusion de bases redondantes, correction des déséquilibres entre classes) ont nécessité significativement plus de temps que prévu - ∞ Complexité du fine-tuning : Les itérations successives d'optimisation des modèles, particulièrement pour traiter les classes minoritaires comme la Cassave, ont multipli",
+      "full_len": 680
+    },
+    {
+      "rank": 8,
+      "score": 0.8150020837783813,
+      "node_id": "45bee4b3-f168-432a-a307-62b0ac2a7996",
+      "snippet": "Le score est défini comme une combinaison pondérée de trois composantes : - Précision locale du soft voting : probabilité que le soft voting des modèles prédit correctement cette image sur le dataset d'entraînement. - Confiance du soft voting : probabilité moyenne attribuée à la classe majoritaire par le soft voting. - Accord inter-modèles : mesuré par la divergence de Kullback-Leibler (KL) entre ",
+      "full_len": 629
+    }
+  ]
+}

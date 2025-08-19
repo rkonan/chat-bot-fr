@@ -1,0 +1,78 @@
+{
+  "question": "Comment les cartes de saillance ont-elles aidé l'interprétation des modèles ?",
+  "mode_decision": "rag",
+  "top_k_effectif": 10,
+  "context": "Pour comprendre les décisions de notre modèle VGG16, nous allons utiliser 3 outils d'interprétation : - -Saliency, qui permet de mettre en évidence les pixels les plus importants d'une image pour une prédiction donnée. - -SHAP (SHapley Additive exPlanations), pour visualiser les caractéristiques qui permettent la prédictions d'une classe sur une image. - -LIME (Local Interpretable Model-agnostic Explanations), qui donne les caractéristiques d'une image qui vont le plus influencer la décision du \n\nL'ensemblage de modèles n'est pertinent que si les modèles présentent une certaine diversité d'erreurs. Pour cela, nous avons étudié : - -La corrélation des erreurs de classification entre les modèles. Des erreurs faiblement corrélées indiquent une complémentarité exploitable. - -La divergence de Jensen-Shannon entre les distributions de probabilité prédites. Une divergence modérée à forte entre modèles indique une diversité de décisions, facteur clé pour améliorer les résultats via l'agrégation\n\n- Exploiter les datasets nettoyés et enrichis. - Adapter les modèles à une distribution de données plus fiable. - Mesurer directement l'impact des stratégies sur les performances, notamment sur les classes Cassava.\n\nSelon les modèles et afin de nous assurer, malgré le faible déséquilibre de classes, que les classes les moins représentées soient correctement traitées, nous avons observé dans certains cas quelle était la k-ème Accuracy la plus faible parmi les classes proposées au modèle.\n\n- ∞ Temps de préprocessing sous-estimé : Le nettoyage et l'homogénéisation des multiples datasets (fusion de bases redondantes, correction des déséquilibres entre classes) ont nécessité significativement plus de temps que prévu - ∞ Complexité du fine-tuning : Les itérations successives d'optimisation des modèles, particulièrement pour traiter les classes minoritaires comme la Cassave, ont multiplié les cycles de développement par 3 - ∞ Phase d'interprétation des modèles : L'utilisation d'outils \n\nLe graphique ci-contre montre l'importance des variables dans la contribution à la classification et confirme en contributeur principal le niveau de bleu. Le taux de bonne prédiction de la classe malade est de 93,5% mais le modèle ne fonctionne pas correctement pour le classement des images saines (taux de prédiction de 74%) Un premier modèle Random Forest ent pour le classement des images saines (taux de prédiction de\n\n- Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel - Attention mechanisms : Intégration de mécanismes d'attention pour focaliser sur les zones pathologiques - Architecture adaptative : Modèles capables d'ajuster leur complexité selon la puissance de calcul disponible\n\nDans cette partie, nous étudions l'impact potentiel de l'ensemblage de modèles sur l'amélioration des performances de classification. Avant d'examiner les méthodes d'ensemblage, il est important de rappeler les performances des modèles pris individuellement dans leur configuration de base (sans stratégie d'amélioration) : - -EfficientNetV2M est le modèle ayant obtenu les meilleurs résultats globaux et sur Cassava. - -Swin Transformer a montré de bonnes performances, notamment une meilleure robus\n\nAfin d'interpréter les modèles, nous avons utilisé GradCam pour visualiser les régions de l'image ayant le plus influencé la prédiction du modèle sur la base du dernier bloc du modèle. Pour une image de vigne atteinte de 'Black Measles' Image originale MobileNetV2 GradCAM Pour une image de Cassave saine (environnement végétal) Image originale MobileNetV2 GradCAM Pour une deuxième image de Cassave (environnement terre) Image originale MobileNetV2 GradCAM Swin Transformer Grad-CAM Sur un modèle CN\n\n- 1 modèle simple sans Transfer Learning, comprenant une première couche de convolution analysant le couleurs RGB (3 canaux) avec 32 filtres détectant les motifs simples et les contours, un deuxième bloc convolutif avec 64 filtres permettant de capter des motifs plus complexes (formes des feuilles, textures), une couche dense interprétant les motifs détectés et enfin la dernière couche de sortie donnant les probabilités par classe de plantes. La représentation du modèle est portée en Annexes. - ",
+  "items": [
+    {
+      "rank": 1,
+      "score": 0.8640721440315247,
+      "node_id": "bdf58845-bf36-433b-9742-7a9101274b33",
+      "snippet": "Pour comprendre les décisions de notre modèle VGG16, nous allons utiliser 3 outils d'interprétation : - -Saliency, qui permet de mettre en évidence les pixels les plus importants d'une image pour une prédiction donnée. - -SHAP (SHapley Additive exPlanations), pour visualiser les caractéristiques qui permettent la prédictions d'une classe sur une image. - -LIME (Local Interpretable Model-agnostic E",
+      "full_len": 742
+    },
+    {
+      "rank": 2,
+      "score": 0.8338363170623779,
+      "node_id": "e0278322-9748-4ce7-b9b7-4c2688bf5d2c",
+      "snippet": "L'ensemblage de modèles n'est pertinent que si les modèles présentent une certaine diversité d'erreurs. Pour cela, nous avons étudié : - -La corrélation des erreurs de classification entre les modèles. Des erreurs faiblement corrélées indiquent une complémentarité exploitable. - -La divergence de Jensen-Shannon entre les distributions de probabilité prédites. Une divergence modérée à forte entre m",
+      "full_len": 653
+    },
+    {
+      "rank": 3,
+      "score": 0.8338128328323364,
+      "node_id": "56acaba3-52e4-4e6d-80ff-a4355b76532e",
+      "snippet": "- Exploiter les datasets nettoyés et enrichis. - Adapter les modèles à une distribution de données plus fiable. - Mesurer directement l'impact des stratégies sur les performances, notamment sur les classes Cassava.",
+      "full_len": 214
+    },
+    {
+      "rank": 4,
+      "score": 0.8323243856430054,
+      "node_id": "226afbc8-76b3-44ec-a4d0-9bda9a1781d3",
+      "snippet": "Selon les modèles et afin de nous assurer, malgré le faible déséquilibre de classes, que les classes les moins représentées soient correctement traitées, nous avons observé dans certains cas quelle était la k-ème Accuracy la plus faible parmi les classes proposées au modèle.",
+      "full_len": 275
+    },
+    {
+      "rank": 5,
+      "score": 0.8310827016830444,
+      "node_id": "90781c83-7b22-4367-8531-123e3931b996",
+      "snippet": "- ∞ Temps de préprocessing sous-estimé : Le nettoyage et l'homogénéisation des multiples datasets (fusion de bases redondantes, correction des déséquilibres entre classes) ont nécessité significativement plus de temps que prévu - ∞ Complexité du fine-tuning : Les itérations successives d'optimisation des modèles, particulièrement pour traiter les classes minoritaires comme la Cassave, ont multipli",
+      "full_len": 680
+    },
+    {
+      "rank": 6,
+      "score": 0.8270951509475708,
+      "node_id": "fde38fb3-f3b1-4e60-a261-d25bfb42653b",
+      "snippet": "Le graphique ci-contre montre l'importance des variables dans la contribution à la classification et confirme en contributeur principal le niveau de bleu. Le taux de bonne prédiction de la classe malade est de 93,5% mais le modèle ne fonctionne pas correctement pour le classement des images saines (taux de prédiction de 74%) Un premier modèle Random Forest ent pour le classement des images saines ",
+      "full_len": 422
+    },
+    {
+      "rank": 7,
+      "score": 0.8259736895561218,
+      "node_id": "a8c9a432-c50e-4512-870f-868079f1cb04",
+      "snippet": "- Modèles hybrides : Combinaison CNN-RNN avec réseaux Liquid Time-Constant pour traitement temporel - Attention mechanisms : Intégration de mécanismes d'attention pour focaliser sur les zones pathologiques - Architecture adaptative : Modèles capables d'ajuster leur complexité selon la puissance de calcul disponible",
+      "full_len": 316
+    },
+    {
+      "rank": 8,
+      "score": 0.8259162902832031,
+      "node_id": "8b11b2d4-8af4-4f3e-a030-788ff073d347",
+      "snippet": "Dans cette partie, nous étudions l'impact potentiel de l'ensemblage de modèles sur l'amélioration des performances de classification. Avant d'examiner les méthodes d'ensemblage, il est important de rappeler les performances des modèles pris individuellement dans leur configuration de base (sans stratégie d'amélioration) : - -EfficientNetV2M est le modèle ayant obtenu les meilleurs résultats globau",
+      "full_len": 819
+    },
+    {
+      "rank": 9,
+      "score": 0.8256397247314453,
+      "node_id": "ba4702e4-ece1-4ee2-815f-cb09ebdb074a",
+      "snippet": "Afin d'interpréter les modèles, nous avons utilisé GradCam pour visualiser les régions de l'image ayant le plus influencé la prédiction du modèle sur la base du dernier bloc du modèle. Pour une image de vigne atteinte de 'Black Measles' Image originale MobileNetV2 GradCAM Pour une image de Cassave saine (environnement végétal) Image originale MobileNetV2 GradCAM Pour une deuxième image de Cassave ",
+      "full_len": 795
+    },
+    {
+      "rank": 10,
+      "score": 0.8252817988395691,
+      "node_id": "187b8190-ad51-4374-9983-86c3c0509a44",
+      "snippet": "- 1 modèle simple sans Transfer Learning, comprenant une première couche de convolution analysant le couleurs RGB (3 canaux) avec 32 filtres détectant les motifs simples et les contours, un deuxième bloc convolutif avec 64 filtres permettant de capter des motifs plus complexes (formes des feuilles, textures), une couche dense interprétant les motifs détectés et enfin la dernière couche de sortie d",
+      "full_len": 615
+    }
+  ]
+}

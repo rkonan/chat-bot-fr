@@ -1,0 +1,64 @@
+{
+  "question": "Quel est le bilan global et les pistes d'amélioration proposées ?",
+  "mode_decision": "rag",
+  "top_k_effectif": 8,
+  "context": "Les résultats suivants comparent les performances des modèles avant et après application des trois stratégies (filtrage, relabellisation, augmentation) sur l'ensemble des classes (global) et spécifiquement sur les classes Cassava.\n\n- Performances globales : légère dégradation sur l'ensemble des modèles. - Cassava : amélioration significative du F1-score pour SwinTransformer (+8.4%) et ResNet (+4.3%), malgré une légère baisse d'accuracy.\n\nEfficientNetV2M, Stratégie = Base Jine. EfficientNetV2M, Accuracy Globale = 0.9858. EfficientNetV2M, Fl Score Global = 0.9845. EfficientNetV2M, Gain Accuracy = . EfficientNetV2M, Gain Fl Score = . , Stratégie = Augmentation. , Accuracy Globale = 0.9748. , Fl Score Global = 0.9773. , Gain Accuracy = 1.109. , Gain Fl Score = . , Stratégie = Filtrage. , Accuracy Globale = 0.9695. , Fl Score Global = 0.9773. , Gain Accuracy = 1.63%. , Gain Fl Score = -0.72%. , Stratégie = Relabeling. , Accuracy Glob\n\n- Diagnostic précoce : Détection automatisée des maladies pour intervention rapide - Réduction des intrants : Ciblage précis des traitements phytosanitaires - Optimisation des rendements : Prévention des pertes de récolte estimées à 20-40% selon la FAO\n\n- Pipeline de qualité d'images : Contribution à l'amélioration automatique d'images agricoles en conditions naturelles - Comparaison architecturale : Étude comparative systématique de 6 architectures sur données agricoles hétérogènes - Traitement des déséquilibres : Stratégies spécialisées pour classes minoritaires en contexte agricole\n\nFl Score Global = 0.9581. ResNetSOV2, Gain Accuracy = . ResNetSOV2, Gain Fl Score = . , Stratégie = Augmentation. , Accuracy Globale = 0.9484. , Fl Score Global = 0.9502. , Gain Accuracy = . , Gain Fl Score = -0.79%. , Stratégie = Filtrage. , Accuracy Globale = 0.9353. , Fl Score Global = 0.9430. , Gain Accuracy = -2.25%. , Gain Fl Score = 1.51%. , Stratégie = Relabeling. , Accuracy Globale = 0.9296. , Fl Score Global = 0.9375. , Gain Accuracy = -2.82%. , Gain Fl Score = -2.069. Swin Transformer\n\n- Extension du dataset : I ntégration de bases de données supplémentaires pour couvrir plus d'espèces (objectif : passer de 19 à 100+ espèces) - Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) - Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …)\n\n- Performances globales : scores stables sur SwinTransformer et EfficientNetV2M, mais déclin marqué sur ResNet. - Cassava : amélioration du F1-score sur SwinTransformer (+5.8%), mais chute sévère sur ResNet (-15%).",
+  "items": [
+    {
+      "rank": 1,
+      "score": 0.8134478330612183,
+      "node_id": "797b1444-3c83-4dea-8d3a-80dad95e867f",
+      "snippet": "Les résultats suivants comparent les performances des modèles avant et après application des trois stratégies (filtrage, relabellisation, augmentation) sur l'ensemble des classes (global) et spécifiquement sur les classes Cassava.",
+      "full_len": 230
+    },
+    {
+      "rank": 2,
+      "score": 0.8113189935684204,
+      "node_id": "a67fb003-815c-4eb7-9640-ad3a1b5c51a7",
+      "snippet": "- Performances globales : légère dégradation sur l'ensemble des modèles. - Cassava : amélioration significative du F1-score pour SwinTransformer (+8.4%) et ResNet (+4.3%), malgré une légère baisse d'accuracy.",
+      "full_len": 208
+    },
+    {
+      "rank": 3,
+      "score": 0.8111507892608643,
+      "node_id": "0149b814-ca6d-45ab-9f09-ab2ba8cfec11",
+      "snippet": "EfficientNetV2M, Stratégie = Base Jine. EfficientNetV2M, Accuracy Globale = 0.9858. EfficientNetV2M, Fl Score Global = 0.9845. EfficientNetV2M, Gain Accuracy = . EfficientNetV2M, Gain Fl Score = . , Stratégie = Augmentation. , Accuracy Globale = 0.9748. , Fl Score Global = 0.9773. , Gain Accuracy = 1.109. , Gain Fl Score = . , Stratégie = Filtrage. , Accuracy Globale = 0.9695. , Fl Score Global = ",
+      "full_len": 678
+    },
+    {
+      "rank": 4,
+      "score": 0.8096634149551392,
+      "node_id": "cd041f54-2b08-44d9-a2b4-63b3b8935cb1",
+      "snippet": "- Diagnostic précoce : Détection automatisée des maladies pour intervention rapide - Réduction des intrants : Ciblage précis des traitements phytosanitaires - Optimisation des rendements : Prévention des pertes de récolte estimées à 20-40% selon la FAO",
+      "full_len": 252
+    },
+    {
+      "rank": 5,
+      "score": 0.809615969657898,
+      "node_id": "03a36397-de4d-414c-9c9d-442c23a7ea30",
+      "snippet": "- Pipeline de qualité d'images : Contribution à l'amélioration automatique d'images agricoles en conditions naturelles - Comparaison architecturale : Étude comparative systématique de 6 architectures sur données agricoles hétérogènes - Traitement des déséquilibres : Stratégies spécialisées pour classes minoritaires en contexte agricole",
+      "full_len": 337
+    },
+    {
+      "rank": 6,
+      "score": 0.807472288608551,
+      "node_id": "8f030350-d34c-4ebd-83b7-f533972121bc",
+      "snippet": "Fl Score Global = 0.9581. ResNetSOV2, Gain Accuracy = . ResNetSOV2, Gain Fl Score = . , Stratégie = Augmentation. , Accuracy Globale = 0.9484. , Fl Score Global = 0.9502. , Gain Accuracy = . , Gain Fl Score = -0.79%. , Stratégie = Filtrage. , Accuracy Globale = 0.9353. , Fl Score Global = 0.9430. , Gain Accuracy = -2.25%. , Gain Fl Score = 1.51%. , Stratégie = Relabeling. , Accuracy Globale = 0.92",
+      "full_len": 500
+    },
+    {
+      "rank": 7,
+      "score": 0.8055357933044434,
+      "node_id": "40273189-55ba-4395-a8bc-f9a57b4d5162",
+      "snippet": "- Extension du dataset : I ntégration de bases de données supplémentaires pour couvrir plus d'espèces (objectif : passer de 19 à 100+ espèces) - Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) - Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …)",
+      "full_len": 344
+    },
+    {
+      "rank": 8,
+      "score": 0.8050612211227417,
+      "node_id": "937ad04a-def5-4f38-afea-8a580dda80de",
+      "snippet": "- Performances globales : scores stables sur SwinTransformer et EfficientNetV2M, mais déclin marqué sur ResNet. - Cassava : amélioration du F1-score sur SwinTransformer (+5.8%), mais chute sévère sur ResNet (-15%).",
+      "full_len": 214
+    }
+  ]
+}

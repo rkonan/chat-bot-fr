@@ -1,0 +1,64 @@
+{
+  "question": "Quelles limites du dataset ont impacté la généralisation ?\"",
+  "mode_decision": "rag",
+  "top_k_effectif": 8,
+  "context": "- Limitations liées au périmètre des données : la première limitation concerne le périmètre des plantes et végétaux présents dans la base. Dès lors, l'application ne pourra pas être utilisée pour reconnaître « toutes » les espèces de plantes. La généralisation de l'application ne pourrait venir que de l'élargissement du périmètre des plantes concernées. - Limitations liées à l'hétérogénéité des données : la seconde limitation concerne l'hétérogénéité des données étudiées, qui a mené à l'exclusio\n\n- Limitations liées au déséquilibre des classes : la troisième limitation concerne le déséquilibre entre plantes avec une surreprésentation de certaines espèces dont en particulier les tomates. - Limitations liées à la qualité des données : la quatrième limitation touche la qualité des données parmi les images retenues, et notamment leur degré de flou qui est primordial dans la reconnaissance des images - Limitations liées à la taille du dataset : la cinquième limitation concerne la taille de l'\n\n- ∞ Redondance non détectée initialement : Découverte tardive que 3 des 4 datasets principaux provenaient de la même source originale, réduisant la diversité réelle des données - ∞ Déséquilibre sévère : Surreprésentation massive des tomates (13 sous-classes) créant un biais dans l'apprentissage - ∞ Qualité hétérogène : Images de cassave systématiquement de qualité inférieure (flou >500, contraste <2) nécessitant un pipeline de traitement spécifique - ∞ Limitations de périmètre : Dataset limité à\n\n- Extension du dataset : I ntégration de bases de données supplémentaires pour couvrir plus d'espèces (objectif : passer de 19 à 100+ espèces) - Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) - Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …)\n\nLes différentes stratégies mises en place visaient à améliorer la classification des images du dataset Cassava, en ciblant notamment les classes déséquilibrées ou mal étiquetées. Cependant, les résultats montrent que ces méthodes ont globalement entraîné une dégradation des performances générales, quel que soit le modèle utilisé. La perte en accuracy et en F1-score est visible, particulièrement sur EfficientNetV2M, qui perd jusqu'à 2.3 % d'accuracy globale. Bien que certaines stratégies, comme l\n\n- Exploiter les datasets nettoyés et enrichis. - Adapter les modèles à une distribution de données plus fiable. - Mesurer directement l'impact des stratégies sur les performances, notamment sur les classes Cassava.\n\n- ∞ Temps de préprocessing sous-estimé : Le nettoyage et l'homogénéisation des multiples datasets (fusion de bases redondantes, correction des déséquilibres entre classes) ont nécessité significativement plus de temps que prévu - ∞ Complexité du fine-tuning : Les itérations successives d'optimisation des modèles, particulièrement pour traiter les classes minoritaires comme la Cassave, ont multiplié les cycles de développement par 3 - ∞ Phase d'interprétation des modèles : L'utilisation d'outils \n\n- Compte tenu de la limitation du dataset à des arbres fruitiers et de céréales et de légumineuses, nous avons recherché d'autres datasets permettant d'étendre la reconnaissance à d'autres plantes (canne à sucre, maïs et vigne) comme exposé dans le tableau ci-dessous. Comme pour le reste des datasets, ces images sont libres de droits.",
+  "items": [
+    {
+      "rank": 1,
+      "score": 0.8562568426132202,
+      "node_id": "ba4bcf66-d17d-42d9-96c7-3565cde46a59",
+      "snippet": "- Limitations liées au périmètre des données : la première limitation concerne le périmètre des plantes et végétaux présents dans la base. Dès lors, l'application ne pourra pas être utilisée pour reconnaître « toutes » les espèces de plantes. La généralisation de l'application ne pourrait venir que de l'élargissement du périmètre des plantes concernées. - Limitations liées à l'hétérogénéité des do",
+      "full_len": 736
+    },
+    {
+      "rank": 2,
+      "score": 0.8460220098495483,
+      "node_id": "56ab161b-2554-444d-b2a5-048829273333",
+      "snippet": "- Limitations liées au déséquilibre des classes : la troisième limitation concerne le déséquilibre entre plantes avec une surreprésentation de certaines espèces dont en particulier les tomates. - Limitations liées à la qualité des données : la quatrième limitation touche la qualité des données parmi les images retenues, et notamment leur degré de flou qui est primordial dans la reconnaissance des ",
+      "full_len": 621
+    },
+    {
+      "rank": 3,
+      "score": 0.8403885364532471,
+      "node_id": "e96f21b6-3145-4822-ba41-8c963a1b4a29",
+      "snippet": "- ∞ Redondance non détectée initialement : Découverte tardive que 3 des 4 datasets principaux provenaient de la même source originale, réduisant la diversité réelle des données - ∞ Déséquilibre sévère : Surreprésentation massive des tomates (13 sous-classes) créant un biais dans l'apprentissage - ∞ Qualité hétérogène : Images de cassave systématiquement de qualité inférieure (flou >500, contraste ",
+      "full_len": 633
+    },
+    {
+      "rank": 4,
+      "score": 0.8325303792953491,
+      "node_id": "40273189-55ba-4395-a8bc-f9a57b4d5162",
+      "snippet": "- Extension du dataset : I ntégration de bases de données supplémentaires pour couvrir plus d'espèces (objectif : passer de 19 à 100+ espèces) - Augmentation ciblée : Techniques d'augmentation spécialisées par type de maladie (GANs, style transfer) - Données multi-modales : Intégration d'informations contextuelles (géolocalisation, saison, …)",
+      "full_len": 344
+    },
+    {
+      "rank": 5,
+      "score": 0.8324645161628723,
+      "node_id": "7d2667f9-2f24-4118-890b-3df09d27ab60",
+      "snippet": "Les différentes stratégies mises en place visaient à améliorer la classification des images du dataset Cassava, en ciblant notamment les classes déséquilibrées ou mal étiquetées. Cependant, les résultats montrent que ces méthodes ont globalement entraîné une dégradation des performances générales, quel que soit le modèle utilisé. La perte en accuracy et en F1-score est visible, particulièrement su",
+      "full_len": 739
+    },
+    {
+      "rank": 6,
+      "score": 0.8263099789619446,
+      "node_id": "56acaba3-52e4-4e6d-80ff-a4355b76532e",
+      "snippet": "- Exploiter les datasets nettoyés et enrichis. - Adapter les modèles à une distribution de données plus fiable. - Mesurer directement l'impact des stratégies sur les performances, notamment sur les classes Cassava.",
+      "full_len": 214
+    },
+    {
+      "rank": 7,
+      "score": 0.8260842561721802,
+      "node_id": "90781c83-7b22-4367-8531-123e3931b996",
+      "snippet": "- ∞ Temps de préprocessing sous-estimé : Le nettoyage et l'homogénéisation des multiples datasets (fusion de bases redondantes, correction des déséquilibres entre classes) ont nécessité significativement plus de temps que prévu - ∞ Complexité du fine-tuning : Les itérations successives d'optimisation des modèles, particulièrement pour traiter les classes minoritaires comme la Cassave, ont multipli",
+      "full_len": 680
+    },
+    {
+      "rank": 8,
+      "score": 0.8211982250213623,
+      "node_id": "83495b41-12e3-4aa8-ad29-c11a6dc1d5ea",
+      "snippet": "- Compte tenu de la limitation du dataset à des arbres fruitiers et de céréales et de légumineuses, nous avons recherché d'autres datasets permettant d'étendre la reconnaissance à d'autres plantes (canne à sucre, maïs et vigne) comme exposé dans le tableau ci-dessous. Comme pour le reste des datasets, ces images sont libres de droits.",
+      "full_len": 336
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+
+input:
+  docs_dir: data
+  extensions: [".pdf", ".docx"]
+  exclude_dirs: []
+  exclude_globs: []
+  max_size_mb: 100
+
+chunking:
+  min_chars: 220
+  max_chars: 1400
+
+dedup:
+  max_hamming: 3
+
+ocr:
+  enable: false
+  dpi: 200
+
+cleaning:
+  line_drop_regex:
+    - "^confidentiel\\b"
+    - "^(page|p\\.)\\s*\\d+$"
+    - "mentions?\\s+légales"
+  chunk_drop_regex:
+    - "^table\\s+des\\s+matières"
+    - "^sommaire$"
+
+embedding:
+  model: intfloat/multilingual-e5-base
+
+output:
+  out_dir: chatbot-models/vectordb_docling_v2

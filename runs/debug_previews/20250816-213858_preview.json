@@ -1,0 +1,64 @@
+{
+  "question": "Quelles stratégies de traitement des images Cassava ont été évaluées ?",
+  "mode_decision": "rag",
+  "top_k_effectif": 8,
+  "context": "Au vu des performances modestes obtenues par nos modèles sur le sous-ensemble Cassava, nous avons décidé de mettre en œuvre plusieurs stratégies d'amélioration. Ces approches visent à renforcer la qualité des données et à améliorer la capacité des modèles à discriminer les classes Cassava, souvent déséquilibrées et visuellement similaires.\n\nLes différentes stratégies mises en place visaient à améliorer la classification des images du dataset Cassava, en ciblant notamment les classes déséquilibrées ou mal étiquetées. Cependant, les résultats montrent que ces méthodes ont globalement entraîné une dégradation des performances générales, quel que soit le modèle utilisé. La perte en accuracy et en F1-score est visible, particulièrement sur EfficientNetV2M, qui perd jusqu'à 2.3 % d'accuracy globale. Bien que certaines stratégies, comme l\n\nLe principal verrou scientifique de ce projet s'est révélé être la qualité et la labellisation hétérogène des données d'images, particulièrement pour la classe Cassave, qui a systématiquement montré des performances de classification inférieures malgré les efforts de fine-tuning. Cette difficulté reflète un défi majeur en reconnaissance d'images agricoles : distinguer les symptômes subtils de maladies sur des images prises dans des conditions naturelles variables, avec des arrière-plans complexe\n\n- Apporter de la diversité visuelle aux classes sous-représentées. - Réduire le biais induit par la classe majoritaire. - Améliorer la généralisation du modèle sur les classes rares. 2. Filtrage basé sur un score multi-critères Une seconde approche a consisté à filtrer les images Cassava jugées peu fiables à l'aide d'un score multi-critères.\n\nLa troisième étape s'est avérée la plus significative en matière de gain de performance, avec un traitement spécifique apportée à la classe 'Cassava' en augmentant manuellement les images des classes minoritaires et en appliquant une augmentation algorithmique ciblée. Les résultats du fine-tuning par modèle sont résumés dans le tableau ci-dessous, les deux modèles EfficientNetV2M et ViT16 se distinguant sur les classes déséquilibrées comme la Cassave.\n\n- Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l'utilisation de certaines images pré-retraitement (Cassave) - Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face au déséquilibre des classes et utilisation du F1-score - Stratégie de données : Questionnement sur l'inclusion/exclusion de la classe Cassave dans le modèle\n\nLes résultats suivants comparent les performances des modèles avant et après application des trois stratégies (filtrage, relabellisation, augmentation) sur l'ensemble des classes (global) et spécifiquement sur les classes Cassava.\n\nLa première phase a reposé sur : - des corrections d'erreur : mesures de précision sur des images test et non les images d'entraînement ; - des 'élagages' rapides de modèles jugés non pertinents ; - l'utilisation de techniques de fine-tuning : choix des 'optimizers', gel/dégel de couches des modèles pour l'apprentissage, technique d'augmentation de data, ajustement des learning rates et introduction de scheduler, modification des fonctions de 'loss', techniques de callback, application de poids ",
+  "items": [
+    {
+      "rank": 1,
+      "score": 0.8698418736457825,
+      "node_id": "a71a0380-0ab5-4170-a354-d0b93e69dfb6",
+      "snippet": "Au vu des performances modestes obtenues par nos modèles sur le sous-ensemble Cassava, nous avons décidé de mettre en œuvre plusieurs stratégies d'amélioration. Ces approches visent à renforcer la qualité des données et à améliorer la capacité des modèles à discriminer les classes Cassava, souvent déséquilibrées et visuellement similaires.",
+      "full_len": 341
+    },
+    {
+      "rank": 2,
+      "score": 0.8646981716156006,
+      "node_id": "7d2667f9-2f24-4118-890b-3df09d27ab60",
+      "snippet": "Les différentes stratégies mises en place visaient à améliorer la classification des images du dataset Cassava, en ciblant notamment les classes déséquilibrées ou mal étiquetées. Cependant, les résultats montrent que ces méthodes ont globalement entraîné une dégradation des performances générales, quel que soit le modèle utilisé. La perte en accuracy et en F1-score est visible, particulièrement su",
+      "full_len": 739
+    },
+    {
+      "rank": 3,
+      "score": 0.8646512031555176,
+      "node_id": "ce48225b-79c2-43a0-a19d-2901826328a0",
+      "snippet": "Le principal verrou scientifique de ce projet s'est révélé être la qualité et la labellisation hétérogène des données d'images, particulièrement pour la classe Cassave, qui a systématiquement montré des performances de classification inférieures malgré les efforts de fine-tuning. Cette difficulté reflète un défi majeur en reconnaissance d'images agricoles : distinguer les symptômes subtils de mala",
+      "full_len": 570
+    },
+    {
+      "rank": 4,
+      "score": 0.8601347208023071,
+      "node_id": "0ed3e913-04c0-4973-985a-8a3e857d06c3",
+      "snippet": "- Apporter de la diversité visuelle aux classes sous-représentées. - Réduire le biais induit par la classe majoritaire. - Améliorer la généralisation du modèle sur les classes rares. 2. Filtrage basé sur un score multi-critères Une seconde approche a consisté à filtrer les images Cassava jugées peu fiables à l'aide d'un score multi-critères.",
+      "full_len": 343
+    },
+    {
+      "rank": 5,
+      "score": 0.8578909635543823,
+      "node_id": "12e978f7-e611-474c-96db-92bd64cb5116",
+      "snippet": "La troisième étape s'est avérée la plus significative en matière de gain de performance, avec un traitement spécifique apportée à la classe 'Cassava' en augmentant manuellement les images des classes minoritaires et en appliquant une augmentation algorithmique ciblée. Les résultats du fine-tuning par modèle sont résumés dans le tableau ci-dessous, les deux modèles EfficientNetV2M et ViT16 se disti",
+      "full_len": 455
+    },
+    {
+      "rank": 6,
+      "score": 0.8555192947387695,
+      "node_id": "ca40d432-be1f-4781-b3c2-f6e17d4e4386",
+      "snippet": "- Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l'utilisation de certaines images pré-retraitement (Cassave) - Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face au déséquilibre des classes et utilisation du F1-score -",
+      "full_len": 906
+    },
+    {
+      "rank": 7,
+      "score": 0.8519662022590637,
+      "node_id": "797b1444-3c83-4dea-8d3a-80dad95e867f",
+      "snippet": "Les résultats suivants comparent les performances des modèles avant et après application des trois stratégies (filtrage, relabellisation, augmentation) sur l'ensemble des classes (global) et spécifiquement sur les classes Cassava.",
+      "full_len": 230
+    },
+    {
+      "rank": 8,
+      "score": 0.8512089252471924,
+      "node_id": "ae8368a4-b398-4545-b7c8-8239d2fd1c52",
+      "snippet": "La première phase a reposé sur : - des corrections d'erreur : mesures de précision sur des images test et non les images d'entraînement ; - des 'élagages' rapides de modèles jugés non pertinents ; - l'utilisation de techniques de fine-tuning : choix des 'optimizers', gel/dégel de couches des modèles pour l'apprentissage, technique d'augmentation de data, ajustement des learning rates et introducti",
+      "full_len": 911
+    }
+  ]
+}

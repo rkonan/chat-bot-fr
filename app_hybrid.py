@@ -2,7 +2,7 @@ import os
 import logging
 import streamlit as st
 from huggingface_hub import hf_hub_download
-from rag_engine_hybrid import RAGEngine
+from rag_engine_hybrid_v1_full import RAGEngine
 
 # Logs
 os.environ.setdefault("NLTK_DATA", "/home/appuser/nltk_data")
@@ -17,7 +17,7 @@ st.set_page_config(page_title="Chat (Hybride RAG + Chat)", page_icon="🤖")
 
 # Données
 ENV = os.getenv("ENV", "local")
-if ENV == "local":
+if ENV != "space":
     faiss_index_path = "chatbot-models/vectordb_docling/index.faiss"
     vectors_path = "chatbot-models/vectordb_docling/chunks.pkl"
 else:
@@ -34,7 +34,7 @@ else:
 
 # Sidebar
 st.sidebar.header("⚙️ Paramètres")
-default_host = os.getenv("OLLAMA_HOST", "http://localhost:11435")
+default_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 ollama_host = st.sidebar.text_input("Ollama host", value=default_host)
 model_name = st.sidebar.text_input("Modèle", value="qwen2.5:3b-instruct-q4_K_M")
 
@@ -76,7 +76,7 @@ if col2.button("Envoyer (stream)"):
             try:
                 ph = st.empty()
                 acc = ""
-                for tok in rag.ask_stream(user_input):
+                for tok in rag.ask_stream(user_input,debug_preview=True):
                     acc += tok
                     ph.markdown(acc)
             except Exception as e:

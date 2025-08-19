@@ -12,7 +12,9 @@ from llama_index.vector_stores.faiss import FaissVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from sentence_transformers.util import cos_sim
 import argparse
-
+from  pathlib import Path
+import datetime,re
+from typing import Optional, Union
 # === Logger ===
 logger = logging.getLogger("RAGHybrid")
 logger.setLevel(logging.INFO)
@@ -87,6 +89,13 @@ class OllamaClient:
         r.raise_for_status()
         return r.json()
 
+    
+def _slugify(txt: str, max_len: int = 60) -> str:
+        txt = (txt or "preview").strip().lower()
+        txt = re.sub(r"\s+", "-", txt)
+        txt = re.sub(r"[^a-z0-9\-]+", "", txt)
+        return (txt[:max_len] or "preview")
+
 # ---------- RAG Engine (lazy) ----------
 class RAGEngine:
     def __init__(self, model_name: str, vector_path: str, index_path: str,
@@ -122,13 +131,43 @@ class RAGEngine:
 
         faiss_index = faiss.read_index(self.index_path)
         vector_store = FaissVectorStore(faiss_index=faiss_index)
-        self.embed_model = HuggingFaceEmbedding(model_name="intfloat/multilingual-e5-base")
+        #self.embed_model = HuggingFaceEmbedding(model_name="intfloat/multilingual-e5-base")
+        self.embed_model = HuggingFaceEmbedding(model_name="/home/rkonan/multilingual-e5-base_light")
         self.index = VectorStoreIndex(nodes=nodes, embed_model=self.embed_model, vector_store=vector_store)
 
         self._loaded = True
         logger.info(f"✅ RAG chargé en {time.perf_counter() - t0:.2f}s (lazy).")
 
+
+    from os import PathLike
+    def save_preview(self ,prev:dict,base_dir:Optional[Union[str, PathLike[str]]] = None,  filename: Optional[str] = None )-> dict:
+         
+        base_path: Path = (
+            Path(base_dir)
+            if base_dir is not None
+            else Path(os.getenv("RAG_DEBUG_DIR", "runs/debug_previews"))
+            )
+        base_path.mkdir(parents=True, exist_ok=True)
+        ts =datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        q= prev.get("quesion") or prev.get("query") or ""
+        stem = filename or f"{ts}_{_slugify(q)}"
+
+        json_path = base_path / f"{stem}.json"
+        md_path   = base_path / f"{stem}.md"
+       
+
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(prev, f, ensure_ascii=False, indent=2)
+        
+        md = self.format_preview_md(prev)
+        with open(md_path, "w", encoding="utf-8") as f:
+            f.write(md)
+
+        if logger:
+            logger.info("Debug preview sauvé: %s / %s", md_path, json_path)
     # ---------- heuristiques ----------
+    
+    
     def _is_greeting(self, text: str) -> bool:
         s = text.lower().strip()
         return s in {"bonjour", "salut", "hello", "bonsoir", "hi", "coucou", "yo"} or len(s.split()) <= 2
@@ -165,7 +204,7 @@ class RAGEngine:
         if len(q.split()) >= 14:
             return True
 
-        return False
+        return True
 
     def _decide_mode(self, scores: List[float], tau: float = 0.32, is_greeting: bool = False) -> str:
         if is_greeting:
@@ -323,7 +362,9 @@ class RAGEngine:
             if debug_preview or os.getenv("RAG_DEBUG") == "1":
                 prev = self.preview_context(question, top_k=top_k)
                 self.log_preview(prev)
+                self.save_preview(prev)
                 if debug_preview:
+
                     yield self.format_preview_md(prev)
                     return
 

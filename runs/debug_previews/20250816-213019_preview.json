@@ -1,0 +1,64 @@
+{
+  "question": "Quelles sont les conclusions sur l'inclusion de la classe Cassava dans le modèle final ?",
+  "mode_decision": "rag",
+  "top_k_effectif": 8,
+  "context": "Les résultats suivants comparent les performances des modèles avant et après application des trois stratégies (filtrage, relabellisation, augmentation) sur l'ensemble des classes (global) et spécifiquement sur les classes Cassava.\n\n- Nous retenons le modèle ayant obtenu la meilleure performance sur le jeu de validation (les images du jeu de test). Dans les faits, nous avons eu besoin de 6 époques pour atteindre l'optimum avec un taux d'accuracy de 97,72%, un macro F1-score de 96,63% et un weighted F1-score de 97,73%. La classe Cassave reste néanmoins encore très moyennement prédite, rejoignant ainsi la conclusion générale que les images qui servent à l'apprentissage pour ces classes sont sans doute à l'origine de ce problè\n\n- Apporter de la diversité visuelle aux classes sous-représentées. - Réduire le biais induit par la classe majoritaire. - Améliorer la généralisation du modèle sur les classes rares. 2. Filtrage basé sur un score multi-critères Une seconde approche a consisté à filtrer les images Cassava jugées peu fiables à l'aide d'un score multi-critères.\n\n- La qualité de la précision semble souffrir de la classe Cassave : quel que soit le modèle employé, et malgré les efforts de fine-tuning, il semble qu'une difficulté de reconnaissance subsiste pour cette classe. Cette difficulté est selon intrinsèquement lié à la qualité des images et aux problèmes apparents de labellisation. Nous nous interrogeons donc sur l'abandon de cette classe dans le modèle final. - Les modèles affichent des tailles variables, certains sans doute incompatibles avec un us\n\nAu vu des performances modestes obtenues par nos modèles sur le sous-ensemble Cassava, nous avons décidé de mettre en œuvre plusieurs stratégies d'amélioration. Ces approches visent à renforcer la qualité des données et à améliorer la capacité des modèles à discriminer les classes Cassava, souvent déséquilibrées et visuellement similaires.\n\nCompte tenu du faible % de prédiction, la Cassave a fait l'objet d'un focus particulier. On constate que le finetuning réalisé a eu un effet spectaculaire sur la reconnaissance de ces classes (hausse du F1-score de 15pts environ chez EfficientNetV2M et ViT16) notamment sur la Cassave saine. S'agissant des autres classes, on relève les principaux enseignements suivants:\n\nOn constate une baisse de l'Accuracy de 75,02% à 70,02% au terme du fine-tuning. La classification s'améliore sur l'ensemble des classes sauf sur la Tomate, la Cassave et la Canne à sucre. La faible Accuracy et la longueur de l'entraînement nous font conclure à l'abandon du modèle.\n\n- Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l'utilisation de certaines images pré-retraitement (Cassave) - Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face au déséquilibre des classes et utilisation du F1-score - Stratégie de données : Questionnement sur l'inclusion/exclusion de la classe Cassave dans le modèle",
+  "items": [
+    {
+      "rank": 1,
+      "score": 0.8669224381446838,
+      "node_id": "797b1444-3c83-4dea-8d3a-80dad95e867f",
+      "snippet": "Les résultats suivants comparent les performances des modèles avant et après application des trois stratégies (filtrage, relabellisation, augmentation) sur l'ensemble des classes (global) et spécifiquement sur les classes Cassava.",
+      "full_len": 230
+    },
+    {
+      "rank": 2,
+      "score": 0.8636166453361511,
+      "node_id": "f28357ab-c2b3-4cae-95b5-371f01b6f7ef",
+      "snippet": "- Nous retenons le modèle ayant obtenu la meilleure performance sur le jeu de validation (les images du jeu de test). Dans les faits, nous avons eu besoin de 6 époques pour atteindre l'optimum avec un taux d'accuracy de 97,72%, un macro F1-score de 96,63% et un weighted F1-score de 97,73%. La classe Cassave reste néanmoins encore très moyennement prédite, rejoignant ainsi la conclusion générale qu",
+      "full_len": 621
+    },
+    {
+      "rank": 3,
+      "score": 0.8607625961303711,
+      "node_id": "0ed3e913-04c0-4973-985a-8a3e857d06c3",
+      "snippet": "- Apporter de la diversité visuelle aux classes sous-représentées. - Réduire le biais induit par la classe majoritaire. - Améliorer la généralisation du modèle sur les classes rares. 2. Filtrage basé sur un score multi-critères Une seconde approche a consisté à filtrer les images Cassava jugées peu fiables à l'aide d'un score multi-critères.",
+      "full_len": 343
+    },
+    {
+      "rank": 4,
+      "score": 0.8604307174682617,
+      "node_id": "a5a7c73d-94ed-41f1-8fd7-0d469eb68387",
+      "snippet": "- La qualité de la précision semble souffrir de la classe Cassave : quel que soit le modèle employé, et malgré les efforts de fine-tuning, il semble qu'une difficulté de reconnaissance subsiste pour cette classe. Cette difficulté est selon intrinsèquement lié à la qualité des images et aux problèmes apparents de labellisation. Nous nous interrogeons donc sur l'abandon de cette classe dans le modèl",
+      "full_len": 684
+    },
+    {
+      "rank": 5,
+      "score": 0.8603137731552124,
+      "node_id": "a71a0380-0ab5-4170-a354-d0b93e69dfb6",
+      "snippet": "Au vu des performances modestes obtenues par nos modèles sur le sous-ensemble Cassava, nous avons décidé de mettre en œuvre plusieurs stratégies d'amélioration. Ces approches visent à renforcer la qualité des données et à améliorer la capacité des modèles à discriminer les classes Cassava, souvent déséquilibrées et visuellement similaires.",
+      "full_len": 341
+    },
+    {
+      "rank": 6,
+      "score": 0.8590951561927795,
+      "node_id": "3bb8483a-8c45-476f-bf4b-00be772f1a0c",
+      "snippet": "Compte tenu du faible % de prédiction, la Cassave a fait l'objet d'un focus particulier. On constate que le finetuning réalisé a eu un effet spectaculaire sur la reconnaissance de ces classes (hausse du F1-score de 15pts environ chez EfficientNetV2M et ViT16) notamment sur la Cassave saine. S'agissant des autres classes, on relève les principaux enseignements suivants:",
+      "full_len": 371
+    },
+    {
+      "rank": 7,
+      "score": 0.8586546182632446,
+      "node_id": "c4b45f53-7ecb-4be4-af0b-a6afad0c3bf8",
+      "snippet": "On constate une baisse de l'Accuracy de 75,02% à 70,02% au terme du fine-tuning. La classification s'améliore sur l'ensemble des classes sauf sur la Tomate, la Cassave et la Canne à sucre. La faible Accuracy et la longueur de l'entraînement nous font conclure à l'abandon du modèle.",
+      "full_len": 282
+    },
+    {
+      "rank": 8,
+      "score": 0.8584291338920593,
+      "node_id": "ca40d432-be1f-4781-b3c2-f6e17d4e4386",
+      "snippet": "- Choix architecturaux : Nécessité de réviser l'approche initiale face aux performances insuffisantes sur certaines classes, menant à l'exploration de modèles alternatifs (SwinTransformer) ou l'utilisation de certaines images pré-retraitement (Cassave) - Métriques d'évaluation : Remise en question de l'accuracy comme métrique principale face au déséquilibre des classes et utilisation du F1-score -",
+      "full_len": 906
+    }
+  ]
+}

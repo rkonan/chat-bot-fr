@@ -1,4 +1,4 @@
-coloré : Est-ce que ce qui est mis en valeur est le fond noir ou le contour de la plante ?
+Est-ce que ce qui est mis en valeur est le fond noir ou le contour de la plante ?
 Quels modèles ont été testés dans le projet ?
 Quelles métriques principales et secondaires ont été utilisées ?
 Quels sont les objectifs du projet et le contexte d'usage ?
