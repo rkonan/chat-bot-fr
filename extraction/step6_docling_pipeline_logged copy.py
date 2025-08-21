@@ -1,5 +1,10 @@
 
 import os
+#os.environ["HF_HOME"] = r"C:\Users\RKONAN\.cache\huggingface"  # ajuste si besoin
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+os.environ["HF_HUB_VERBOSITY"] = "debug"
+
 import re
 import sys
 import json
@@ -22,10 +27,46 @@ import faiss
 from docling.document_converter import DocumentConverter
 from docling.chunking import HybridChunker
 
+from docling.datamodel.base_models import InputFormat
+from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.document_converter import DocumentConverter, PdfFormatOption
+
+
 from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.core.schema import TextNode
 from llama_index.vector_stores.faiss import FaissVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+from huggingface_hub import logging as hf_logging
+hf_logging.set_verbosity_debug()
+
+# Monkey‑patch des fonctions utilisées par Docling / HF Hub
+import huggingface_hub
+from huggingface_hub import snapshot_download as _orig_snapshot_download
+from huggingface_hub import hf_hub_download as _orig_hf_hub_download
+
+
+def _trace_snapshot_download(*args, **kwargs):
+    print("\n[TRACE] snapshot_download called with:")
+    print("  repo_id  =", kwargs.get("repo_id") or (args[0] if args else None))
+    print("  revision =", kwargs.get("revision"))
+    print("  cache_dir=", kwargs.get("cache_dir"))
+    print("  local_files_only =", kwargs.get("local_files_only"))
+    sys.stdout.flush()
+    return _orig_snapshot_download(*args, **kwargs)
+
+def _trace_hf_hub_download(*args, **kwargs):
+    print("\n[TRACE] hf_hub_download called with:")
+    print("  repo_id  =", kwargs.get("repo_id"))
+    print("  revision =", kwargs.get("revision"))
+    print("  filename =", kwargs.get("filename"))
+    print("  cache_dir=", kwargs.get("cache_dir"))
+    print("  local_files_only =", kwargs.get("local_files_only"))
+    sys.stdout.flush()
+    return _orig_hf_hub_download(*args, **kwargs)
+
+huggingface_hub.snapshot_download = _trace_snapshot_download
+huggingface_hub.hf_hub_download = _trace_hf_hub_download
 
 # ---- Logger ----
 logger = logging.getLogger("DoclingPipeline")
@@ -316,7 +357,15 @@ def run(cfg: dict):
         logger.warning(f"Aucun document trouvé sous {docs_dir}")
         return
 
-    converter = DocumentConverter()
+
+    pipeline_options = PdfPipelineOptions()
+    pipeline_options.do_ocr = False  # <-- désactive l’OCR
+
+    converter = DocumentConverter(
+    format_options={
+        InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
+    }
+)
     chunker = HybridChunker()
 
     texts: List[str] = []
@@ -482,26 +531,6 @@ def main():
     args = ap.parse_args()
     set_log_level(args.log_level)
     cfg = load_config(args.config)
-    import sys, traceback
-    import huggingface_hub as hf
-
-    # Sauvegarde des fonctions originales
-    _orig_snapshot = hf.snapshot_download
-    _orig_hfdown   = hf.hf_hub_download
-
-    def traced_snapshot_download(*args, **kwargs):
-        print(f"[HF TRACE] snapshot_download args={args} kwargs={kwargs}", file=sys.stderr)
-        print("".join(traceback.format_stack(limit=5)), file=sys.stderr)
-        return _orig_snapshot(*args, **kwargs)
-
-    def traced_hf_hub_download(*args, **kwargs):
-        print(f"[HF TRACE] hf_hub_download args={args} kwargs={kwargs}", file=sys.stderr)
-        print("".join(traceback.format_stack(limit=5)), file=sys.stderr)
-        return _orig_hfdown(*args, **kwargs)
-
-    # Remplacement
-    hf.snapshot_download = traced_snapshot_download
-    hf.hf_hub_download   = traced_hf_hub_download
     run(cfg)
 
 if __name__ == "__main__":
